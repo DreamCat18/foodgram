@@ -15,10 +15,10 @@ User = get_user_model()
 
 
 class Base64ImageField(serializers.ImageField):
-    """Поле для изображений в base64."""
+    """Преобразует base64 строку в файл изображения."""
 
     def to_internal_value(self, data):
-        """Преобразует base64 строку в файл изображения."""
+
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
             ext = format.split('/')[-1]
@@ -237,7 +237,6 @@ class FavoriteSerializer(serializers.ModelSerializer):
         fields = ('user', 'recipe')
 
     def to_representation(self, instance):
-        """Возвращает сериализованный рецепт."""
         return RecipeMinifiedSerializer(instance.recipe).data
 
 
@@ -249,7 +248,6 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         fields = ('user', 'recipe')
 
     def to_representation(self, instance):
-        """Возвращает сериализованный рецепт."""
         return RecipeMinifiedSerializer(instance.recipe).data
 
 
@@ -287,7 +285,6 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         fields = ('user', 'author')
 
     def to_representation(self, instance):
-        """Возвращает сериализованного автора."""
         return UserWithRecipesSerializer(instance.author, context=self.context).data
 
 
