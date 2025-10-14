@@ -8,6 +8,8 @@ User = get_user_model()
 
 
 class IngredientFilter(FilterSet):
+    """Фильтр для ингредиентов."""
+
     name = filters.CharFilter(
         field_name='name',
         lookup_expr='istartswith'
@@ -19,6 +21,8 @@ class IngredientFilter(FilterSet):
 
 
 class RecipeFilter(FilterSet):
+    """Фильтр для рецептов."""
+
     tags = filters.AllValuesMultipleFilter(
         field_name='tags__slug',
         conjoined=False
@@ -38,11 +42,13 @@ class RecipeFilter(FilterSet):
         fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')
 
     def filter_is_favorited(self, queryset, name, value):
+        """Фильтрует рецепты по избранному."""
         if value and self.request.user.is_authenticated:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
+        """Фильтрует рецепты по списку покупок."""
         if value and self.request.user.is_authenticated:
             return queryset.filter(shopping_cart__user=self.request.user)
         return queryset

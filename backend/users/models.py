@@ -3,6 +3,8 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
+    """Модель пользователя."""
+
     email = models.EmailField(
         'email address',
         unique=True,
@@ -23,4 +25,5 @@ class CustomUser(AbstractUser):
         verbose_name_plural = 'Пользователи'
 
     def __str__(self):
+        """Возвращает строковое представление пользователя."""
         return self.username
