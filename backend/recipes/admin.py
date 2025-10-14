@@ -1,3 +1,48 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Favorite, Ingredient, Recipe, ShoppingCart, Subscription, Tag
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+    search_fields = ('name', 'slug')
+    prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('name', 'measurement_unit')
+    search_fields = ('name',)
+    list_filter = ('measurement_unit',)
+
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'author', 'cooking_time', 'favorites_count')
+    search_fields = ('name', 'author__username', 'author__email')
+    list_filter = ('tags', 'cooking_time')
+    readonly_fields = ('favorites_count',)
+
+    def favorites_count(self, obj):
+        return obj.favorites.count()
+
+    favorites_count.short_description = 'Количество добавлений в избранное'
+
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe')
+    search_fields = ('user__username', 'user__email', 'recipe__name')
+
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe')
+    search_fields = ('user__username', 'user__email', 'recipe__name')
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'author')
+    search_fields = ('user__username', 'user__email', 'author__username', 'author__email')
