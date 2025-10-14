@@ -1,24 +1,58 @@
-import csv
 import os
+from csv import reader
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from recipes.models import Ingredient
+from recipes.models import Ingredient, Tag
 
 
 class Command(BaseCommand):
-    help = 'Load ingredients from CSV file'
+    """Загружает данные из CSV файлов в базу данных."""
+
+    help = 'Загрузка данных из CSV-файлов'
 
     def handle(self, *args, **options):
-        file_path = os.path.join('data', 'ingredients.csv')
-        with open(file_path, 'r', encoding='utf-8') as file:
-            reader = csv.reader(file)
-            for row in reader:
-                name, measurement_unit = row
-                Ingredient.objects.get_or_create(
-                    name=name,
-                    measurement_unit=measurement_unit
-                )
-        self.stdout.write(
-            self.style.SUCCESS('Successfully loaded ingredients')
-        )
+        """Загружает ингредиенты и теги из CSV файлов."""
+        
+        ingredients_path = os.path.join(settings.BASE_DIR, 'data', 'ingredients.csv')
+        if os.path.exists(ingredients_path):
+            ingredients_created = 0
+            with open(ingredients_path, 'r', encoding='utf-8') as file:
+                csv_reader = reader(file)
+                for row in csv_reader:
+                    if len(row) >= 2:
+                        name = row[0].strip()
+                        measurement_unit = row[1].strip()
+                        ingredient, created = Ingredient.objects.get_or_create(
+                            name=name,
+                            measurement_unit=measurement_unit
+                        )
+                        if created:
+                            ingredients_created += 1
+            self.stdout.write(
+                f'Загружено {ingredients_created} новых ингредиентов'
+            )
+        else:
+            self.stdout.write('Файл ingredients.csv не найден')
+
+        tags_path = os.path.join(settings.BASE_DIR, 'data', 'tags.csv')
+        if os.path.exists(tags_path):
+            tags_created = 0
+            with open(tags_path, 'r', encoding='utf-8') as file:
+                csv_reader = reader(file)
+                for row in csv_reader:
+                    if len(row) >= 2:
+                        name = row[0].strip()
+                        slug = row[1].strip()
+                        tag, created = Tag.objects.get_or_create(
+                            name=name,
+                            slug=slug
+                        )
+                        if created:
+                            tags_created += 1
+            self.stdout.write(f'Загружено {tags_created} новых тегов')
+        else:
+            self.stdout.write('Файл tags.csv не найден')
+
+        self.stdout.write('Загрузка данных завершена!')
