@@ -51,7 +51,6 @@ class Command(BaseCommand):
                         )
                         if created:
                             tags_created += 1
-            # Удаляем теги, которых нет в CSV
             tags_deleted = 0
             for tag in Tag.objects.all():
                 if tag.slug not in tags_in_csv:
