@@ -49,20 +49,24 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(
-        detail=False,
-        methods=['post'],
+        detail=True,
+        methods=['put'],
         permission_classes=[IsAuthenticated]
     )
-    def avatar(self, request):
+    def avatar(self, request, pk=None):
         """Устанавливает аватар пользователя."""
+        if pk != 'me':
+            return Response({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = SetAvatarSerializer(request.user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
     @avatar.mapping.delete
-    def delete_avatar(self, request):
+    def delete_avatar(self, request, pk=None):
         """Удаляет аватар пользователя."""
+        if pk != 'me':
+            return Response({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
         request.user.avatar.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
