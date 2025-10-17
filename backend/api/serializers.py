@@ -134,7 +134,12 @@ class RecipeSerializer(serializers.ModelSerializer):
             'id', 'tags', 'author', 'ingredients', 'is_favorited',
             'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time'
         )
-        read_only_fields = ('id', 'author', 'is_favorited', 'is_in_shopping_cart')
+        read_only_fields = (
+            'id', 
+            'author', 
+            'is_favorited', 
+            'is_in_shopping_cart'
+        )
 
     def get_is_favorited(self, obj):
         """Проверяет, добавлен ли рецепт в избранное."""
@@ -174,12 +179,21 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('ingredients', 'tags', 'image', 'name', 'text', 'cooking_time')
+        fields = (
+            'ingredients', 
+            'tags', 
+            'image', 
+            'name', 
+            'text', 
+            'cooking_time'
+        )
 
     def validate_ingredients(self, value):
         """Валидирует ингредиенты."""
         if not value:
-            raise ValidationError('Необходимо указать хотя бы один ингредиент.')
+            raise ValidationError(
+                'Необходимо указать хотя бы один ингредиент.'
+            )
         ingredient_ids = [item['id'] for item in value]
         if len(ingredient_ids) != len(set(ingredient_ids)):
             raise ValidationError('Ингредиенты должны быть уникальными.')
@@ -258,7 +272,10 @@ class UserWithRecipesSerializer(CustomUserSerializer):
     recipes_count = serializers.SerializerMethodField()
 
     class Meta(CustomUserSerializer.Meta):
-        fields = CustomUserSerializer.Meta.fields + ('recipes', 'recipes_count')
+        fields = CustomUserSerializer.Meta.fields + (
+            'recipes', 
+            'recipes_count'
+        )
 
     def get_recipes(self, obj):
         """Возвращает рецепты пользователя."""
@@ -285,7 +302,10 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         fields = ('user', 'author')
 
     def to_representation(self, instance):
-        return UserWithRecipesSerializer(instance.author, context=self.context).data
+        return UserWithRecipesSerializer(
+            instance.author, 
+            context=self.context
+        ).data
 
 
 class RecipeGetShortLinkSerializer(serializers.Serializer):

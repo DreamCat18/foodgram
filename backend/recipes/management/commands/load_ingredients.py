@@ -15,7 +15,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Загружает ингредиенты и теги из CSV файлов."""
         
-        ingredients_path = os.path.join(settings.BASE_DIR, 'data', 'ingredients.csv')
+        ingredients_path = os.path.join(
+            settings.BASE_DIR, 
+            'data', 
+            'ingredients.csv'
+        )
         if os.path.exists(ingredients_path):
             ingredients_created = 0
             with open(ingredients_path, 'r', encoding='utf-8') as file:
@@ -30,7 +34,9 @@ class Command(BaseCommand):
                         )
                         if created:
                             ingredients_created += 1
-            self.stdout.write(f'Загружено {ingredients_created} новых ингредиентов')
+            self.stdout.write(
+                f'Загружено {ingredients_created} новых ингредиентов'
+            )
         else:
             self.stdout.write('Файл ingredients.csv не найден')
 
