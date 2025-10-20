@@ -6,7 +6,7 @@ from django.urls import include, path
 
 
 def home(request):
-    return redirect('/api/')  
+    return redirect('/api/')
 
 
 urlpatterns = [

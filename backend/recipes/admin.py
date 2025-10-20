@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from .models import Favorite, Ingredient, Recipe, ShoppingCart, Subscription, Tag
+from .models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    ShoppingCart,
+    Subscription,
+    Tag
+)
 
 
 @admin.register(Tag)
@@ -45,4 +52,9 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'author')
-    search_fields = ('user__username', 'user__email', 'author__username', 'author__email')
+    search_fields = (
+        'user__username',
+        'user__email',
+        'author__username',
+        'author__email'
+    )

@@ -6,6 +6,8 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from backend.constants import MIN_VALUE_AMOUNT
+
 from recipes.models import (
     Favorite, Ingredient, Recipe, RecipeIngredient,
     ShoppingCart, Subscription, Tag
@@ -135,9 +137,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time'
         )
         read_only_fields = (
-            'id', 
-            'author', 
-            'is_favorited', 
+            'id',
+            'author',
+            'is_favorited',
             'is_in_shopping_cart'
         )
 
@@ -162,9 +164,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class IngredientCreateSerializer(serializers.Serializer):
     """Сериализатор для создания ингредиента в рецепте."""
-
     id = serializers.IntegerField()
-    amount = serializers.IntegerField(min_value=1)
+    amount = serializers.IntegerField(min_value=MIN_VALUE_AMOUNT)
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
@@ -180,11 +181,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            'ingredients', 
-            'tags', 
-            'image', 
-            'name', 
-            'text', 
+            'ingredients',
+            'tags',
+            'image',
+            'name',
+            'text',
             'cooking_time'
         )
 
@@ -273,7 +274,7 @@ class UserWithRecipesSerializer(CustomUserSerializer):
 
     class Meta(CustomUserSerializer.Meta):
         fields = CustomUserSerializer.Meta.fields + (
-            'recipes', 
+            'recipes',
             'recipes_count'
         )
 
@@ -303,7 +304,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return UserWithRecipesSerializer(
-            instance.author, 
+            instance.author,
             context=self.context
         ).data
 

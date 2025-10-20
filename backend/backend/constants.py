@@ -1,1 +1,53 @@
-              
+# Максимальные длины полей
+MAX_LENGTH_NAME_TAG = 32
+MAX_LENGTH_SLUG_TAG = 32
+MAX_LENGTH_MEASUREMENT_UNIT = 64
+MAX_LENGTH_NAME_INGREDIENT = 128
+MAX_LENGTH_FIRST_NAME = 150
+MAX_LENGTH_LAST_NAME = 150
+MAX_LENGTH_EMAIL = 254
+MAX_LENGTH_NAME_RECIPE = 256
+
+# Пути загрузки файлов
+UPLOAD_PATH_RECIPES = 'recipes/'
+UPLOAD_PATH_USERS = 'users/'
+
+# Размеры пагинации
+DEFAULT_PAGE_SIZE = 6
+
+# Минимальные значения
+MIN_VALUE_AMOUNT = 1
+MIN_VALUE_COOKING_TIME = 1
+
+# Related names
+RELATED_NAME_RECIPES = 'recipes'
+RELATED_NAME_FAVORITES = 'favorites'
+RELATED_NAME_SHOPPING_CART = 'shopping_cart'
+RELATED_NAME_SUBSCRIPTIONS = 'subscriptions'
+RELATED_NAME_SUBSCRIBERS = 'subscribers'
+RELATED_NAME_RECIPE_INGREDIENTS = 'recipe_ingredients'
+
+# Verbose names
+VERBOSE_NAME_AUTHOR = 'Автор'
+VERBOSE_NAME_NAME = 'Название'
+VERBOSE_NAME_SLUG = 'Слаг'
+VERBOSE_NAME_MEASUREMENT_UNIT = 'Единица измерения'
+VERBOSE_NAME_IMAGE = 'Картинка'
+VERBOSE_NAME_TEXT = 'Описание'
+VERBOSE_NAME_INGREDIENTS = 'Ингредиенты'
+VERBOSE_NAME_TAGS = 'Теги'
+VERBOSE_NAME_COOKING_TIME = 'Время приготовления (в минутах)'
+VERBOSE_NAME_PUB_DATE = 'Дата публикации'
+VERBOSE_NAME_RECIPE = 'Рецепт'
+VERBOSE_NAME_INGREDIENT = 'Ингредиент'
+VERBOSE_NAME_AMOUNT = 'Количество'
+VERBOSE_NAME_USER = 'Пользователь'
+VERBOSE_NAME_EMAIL = 'email address'
+VERBOSE_NAME_FIRST_NAME = 'first name'
+VERBOSE_NAME_LAST_NAME = 'last name'
+VERBOSE_NAME_AVATAR = 'Аватар'
+
+# HTTP статусы
+HTTP_400_BAD_REQUEST = 400
+HTTP_201_CREATED = 201
+HTTP_204_NO_CONTENT = 204

@@ -14,10 +14,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Загружает ингредиенты и теги из CSV файлов."""
-        
+
         ingredients_path = os.path.join(
-            settings.BASE_DIR, 
-            'data', 
+            settings.BASE_DIR,
+            'data',
             'ingredients.csv'
         )
         if os.path.exists(ingredients_path):

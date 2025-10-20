@@ -1,22 +1,23 @@
 from django.contrib.auth import get_user_model
-# from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-# from reportlab.lib.pagesizes import letter
-# from reportlab.pdfbase import pdfmetrics
-# from reportlab.pdfbase.ttfonts import TTFont
-# from reportlab.pdfgen import canvas
-from rest_framework import status, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from backend.constants import (
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_400_BAD_REQUEST,
+)
+
 from recipes.models import (
-    Favorite, 
-    Ingredient, 
-    Recipe, 
-    ShoppingCart, 
-    Subscription, 
+    Favorite,
+    Ingredient,
+    Recipe,
+    ShoppingCart,
+    Subscription,
     Tag
 )
 
@@ -24,10 +25,16 @@ from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
-    CustomUserSerializer, FavoriteSerializer, IngredientSerializer,
-    RecipeCreateSerializer, RecipeSerializer,
-    SetAvatarSerializer, ShoppingCartSerializer, SubscriptionSerializer,
-    TagSerializer, UserWithRecipesSerializer
+    CustomUserSerializer,
+    FavoriteSerializer,
+    IngredientSerializer,
+    RecipeCreateSerializer,
+    RecipeSerializer,
+    SetAvatarSerializer,
+    ShoppingCartSerializer,
+    SubscriptionSerializer,
+    TagSerializer,
+    UserWithRecipesSerializer
 )
 
 User = get_user_model()
@@ -53,7 +60,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def me(self, request):
         """Возвращает данные текущего пользователя."""
         serializer = CustomUserSerializer(
-            request.user, 
+            request.user,
             context={'request': request}
         )
         return Response(serializer.data)
@@ -67,12 +74,12 @@ class UserViewSet(viewsets.ModelViewSet):
         """Устанавливает аватар пользователя."""
         if pk != 'me':
             return Response(
-                {'error': 'Invalid request'}, 
-                status=status.HTTP_400_BAD_REQUEST
+                {'error': 'Invalid request'},
+                status=HTTP_400_BAD_REQUEST
             )
         serializer = SetAvatarSerializer(
-            request.user, 
-            data=request.data, 
+            request.user,
+            data=request.data,
             partial=True
         )
         serializer.is_valid(raise_exception=True)
@@ -84,11 +91,11 @@ class UserViewSet(viewsets.ModelViewSet):
         """Удаляет аватар пользователя."""
         if pk != 'me':
             return Response(
-                {'error': 'Invalid request'}, 
-                status=status.HTTP_400_BAD_REQUEST
+                {'error': 'Invalid request'},
+                status=HTTP_400_BAD_REQUEST
             )
         request.user.avatar.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,
@@ -101,8 +108,8 @@ class UserViewSet(viewsets.ModelViewSet):
         authors = [subscription.author for subscription in subscriptions]
         page = self.paginate_queryset(authors)
         serializer = UserWithRecipesSerializer(
-            page, 
-            many=True, 
+            page,
+            many=True,
             context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
@@ -117,30 +124,30 @@ class UserViewSet(viewsets.ModelViewSet):
         author = get_object_or_404(User, pk=pk)
         if request.method == 'POST':
             if Subscription.objects.filter(
-                user=request.user, 
+                user=request.user,
                 author=author
             ).exists():
                 return Response(
                     {'errors': 'Вы уже подписаны на этого пользователя.'},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=HTTP_400_BAD_REQUEST
                 )
             if author == request.user:
                 return Response(
                     {'errors': 'Нельзя подписаться на себя.'},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=HTTP_400_BAD_REQUEST
                 )
             Subscription.objects.create(user=request.user, author=author)
             serializer = SubscriptionSerializer(
                 Subscription.objects.get(user=request.user, author=author),
                 context={'request': request}
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=HTTP_201_CREATED)
         if request.method == 'DELETE':
             subscription = get_object_or_404(
                 Subscription, user=request.user, author=author
             )
             subscription.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=HTTP_204_NO_CONTENT)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -173,15 +180,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Возвращает queryset с учетом фильтров избранного и корзины."""
         queryset = super().get_queryset()
-        
+
         if self.action == 'favorite' and self.request.user.is_authenticated:
             return queryset.filter(favorites__user=self.request.user)
-        
+
         if self.action == (
             'shopping_cart' and self.request.user.is_authenticated
         ):
             return queryset.filter(shopping_cart__user=self.request.user)
-            
+
         return queryset
 
     def get_serializer_class(self):
@@ -202,7 +209,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipes = [favorite.recipe for favorite in favorites]
         tags = request.query_params.getlist('tags')
         if tags:
-            recipes = [recipe for recipe in recipes if any(tag.slug in tags for tag in recipe.tags.all())]
+            recipes = [recipe for recipe in recipes if any(
+                tag.slug in tags for tag in recipe.tags.all())]
         page = self.paginate_queryset(recipes)
         serializer = RecipeSerializer(
             page,
@@ -221,24 +229,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             if Favorite.objects.filter(
-                user=request.user, 
+                user=request.user,
                 recipe=recipe
             ).exists():
                 return Response(
                     {'errors': 'Рецепт уже в избранном.'},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=HTTP_400_BAD_REQUEST
                 )
             Favorite.objects.create(user=request.user, recipe=recipe)
             serializer = FavoriteSerializer(
                 Favorite.objects.get(user=request.user, recipe=recipe)
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=HTTP_201_CREATED)
         if request.method == 'DELETE':
             favorite = get_object_or_404(
                 Favorite, user=request.user, recipe=recipe
             )
             favorite.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,
@@ -252,8 +260,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipes = [item.recipe for item in shopping_cart]
         page = self.paginate_queryset(recipes)
         serializer = RecipeSerializer(
-            page, 
-            many=True, 
+            page,
+            many=True,
             context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
@@ -268,21 +276,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             if ShoppingCart.objects.filter(
-                user=request.user, 
+                user=request.user,
                 recipe=recipe
             ).exists():
                 return Response(
                     {'errors': 'Рецепт уже в списке покупок.'},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=HTTP_400_BAD_REQUEST
                 )
             ShoppingCart.objects.create(user=request.user, recipe=recipe)
             serializer = ShoppingCartSerializer(
                 ShoppingCart.objects.get(user=request.user, recipe=recipe)
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=HTTP_201_CREATED)
         if request.method == 'DELETE':
             shopping_cart = get_object_or_404(
                 ShoppingCart, user=request.user, recipe=recipe
             )
             shopping_cart.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=HTTP_204_NO_CONTENT)
