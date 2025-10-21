@@ -34,7 +34,7 @@ from .serializers import (
     ShoppingCartSerializer,
     SubscriptionSerializer,
     TagSerializer,
-    UserWithRecipesSerializer
+    # UserWithRecipesSerializer
 )
 
 User = get_user_model()
@@ -105,9 +105,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def subscriptions(self, request):
         """Возвращает подписки пользователя."""
         subscriptions = Subscription.objects.filter(user=request.user)
-        authors = [subscription.author for subscription in subscriptions]
-        page = self.paginate_queryset(authors)
-        serializer = UserWithRecipesSerializer(
+        page = self.paginate_queryset(subscriptions)
+        serializer = SubscriptionSerializer(
             page,
             many=True,
             context={'request': request}
@@ -136,9 +135,12 @@ class UserViewSet(viewsets.ModelViewSet):
                     {'errors': 'Нельзя подписаться на себя.'},
                     status=HTTP_400_BAD_REQUEST
                 )
-            Subscription.objects.create(user=request.user, author=author)
+            subscription = Subscription.objects.create(
+                user=request.user,
+                author=author
+            )
             serializer = SubscriptionSerializer(
-                Subscription.objects.get(user=request.user, author=author),
+                subscription,
                 context={'request': request}
             )
             return Response(serializer.data, status=HTTP_201_CREATED)

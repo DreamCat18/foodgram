@@ -66,5 +66,4 @@ class Command(BaseCommand):
             self.stdout.write(f'Удалено {tags_deleted} тегов')
         else:
             self.stdout.write('Файл tags.csv не найден')
-
         self.stdout.write('Загрузка данных завершена!')

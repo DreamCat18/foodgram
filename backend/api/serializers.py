@@ -108,7 +108,7 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
-class RecipeMinifiedSerializer(serializers.ModelSerializer):
+class RecipeShortSerializer(serializers.ModelSerializer):
     """Сокращенный сериализатор для рецепта."""
 
     class Meta:
@@ -252,7 +252,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
         fields = ('user', 'recipe')
 
     def to_representation(self, instance):
-        return RecipeMinifiedSerializer(instance.recipe).data
+        return RecipeShortSerializer(instance.recipe).data
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
@@ -263,20 +263,24 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         fields = ('user', 'recipe')
 
     def to_representation(self, instance):
-        return RecipeMinifiedSerializer(instance.recipe).data
+        return RecipeShortSerializer(instance.recipe).data
 
 
-class UserWithRecipesSerializer(CustomUserSerializer):
+class UserWithRecipesSerializer(serializers.ModelSerializer):
     """Сериализатор пользователя с рецептами."""
 
+    is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
-    class Meta(CustomUserSerializer.Meta):
-        fields = CustomUserSerializer.Meta.fields + (
-            'recipes',
-            'recipes_count'
-        )
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Subscription.objects.filter(
+                user=request.user,
+                author=obj
+            ).exists()
+        return False
 
     def get_recipes(self, obj):
         """Возвращает рецепты пользователя."""
@@ -288,11 +292,16 @@ class UserWithRecipesSerializer(CustomUserSerializer):
                 recipes = recipes[:int(recipes_limit)]
             except ValueError:
                 pass
-        return RecipeMinifiedSerializer(recipes, many=True).data
+        return RecipeShortSerializer(recipes, many=True).data
 
     def get_recipes_count(self, obj):
         """Возвращает количество рецептов."""
         return obj.recipes.count()
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
