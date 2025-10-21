@@ -128,18 +128,34 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=['get'],
-        permission_classes=[IsAuthenticated]
+        permission_classes=[IsAuthenticated],
+        url_path='subscriptions'
     )
     def subscriptions(self, request):
         """Возвращает подписки пользователя."""
-        authors = User.objects.filter(subscribers__user=request.user)
-        page = self.paginate_queryset(authors)
-        serializer = UserWithRecipesSerializer(
-            page,
+        print(f"User: {request.user}")
+        subscriptions = Subscription.objects.filter(
+            user=request.user
+        ).select_related('author')
+        print(f"Found {subscriptions.count()} subscriptions")
+
+        page = self.paginate_queryset(subscriptions)
+        if page is not None:
+            serializer = SubscriptionSerializer(
+                page,
+                many=True,
+                context={'request': request}
+            )
+            print(f"Serialized data: {serializer.data}")
+            return self.get_paginated_response(serializer.data)
+
+        serializer = SubscriptionSerializer(
+            subscriptions,
             many=True,
             context={'request': request}
         )
-        return self.get_paginated_response(serializer.data)
+        print(f"Serialized data: {serializer.data}")
+        return Response(serializer.data)
 
     @action(
         detail=True,

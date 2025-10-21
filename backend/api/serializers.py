@@ -285,7 +285,10 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
     def get_recipes(self, obj):
         """Возвращает рецепты пользователя."""
         request = self.context.get('request')
-        recipes_limit = request.query_params.get('recipes_limit')
+        recipes_limit = (
+            getattr(request, 'query_params', getattr(request, 'GET', {}))
+            .get('recipes_limit') if request else None
+        )
         recipes = obj.recipes.all()
         if recipes_limit:
             try:
@@ -305,17 +308,53 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    """Сериализатор для подписки."""
+    """Сериализатор для подписок."""
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    def get_is_subscribed(self, obj):
+        """Всегда True для подписок."""
+        return True
+
+    def get_recipes(self, obj):
+        """Возвращает рецепты автора с ограничением по количеству."""
+        request = self.context.get('request')
+        recipes_limit = (
+            getattr(request, 'query_params', getattr(request, 'GET', {}))
+            .get('recipes_limit') if request else None
+        )
+
+        recipes = obj.author.recipes.all()
+
+        if recipes_limit:
+            try:
+                recipes = recipes[:int(recipes_limit)]
+            except ValueError:
+                pass
+
+        serializer = RecipeShortSerializer(
+            recipes,
+            many=True,
+            context=self.context
+        )
+        return serializer.data
+
+    def get_recipes_count(self, obj):
+        """Возвращает общее количество рецептов автора."""
+        return obj.author.recipes.count()
 
     class Meta:
         model = Subscription
-        fields = ('user', 'author')
-
-    def to_representation(self, instance):
-        return UserWithRecipesSerializer(
-            instance.author,
-            context=self.context
-        ).data
+        fields = (
+            'id', 'email', 'username', 'first_name', 'last_name',
+            'is_subscribed', 'recipes', 'recipes_count'
+        )
 
 
 class RecipeGetShortLinkSerializer(serializers.Serializer):
