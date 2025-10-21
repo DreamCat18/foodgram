@@ -153,7 +153,13 @@ DJOSER = {
         'current_user': 'api.serializers.CustomUserSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
     },
+    'PERMISSIONS': {
+        'user': ('rest_framework.permissions.AllowAny',),
+        'user_list': ('rest_framework.permissions.AllowAny',),
+    },
 }
+
+FRONTEND_BASE_URL = 'http://localhost:3000'
 
 # DJOSER = {
 #     'LOGIN_FIELD': 'email',

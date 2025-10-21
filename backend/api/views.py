@@ -1,9 +1,10 @@
+# from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from backend.constants import (
@@ -29,12 +30,13 @@ from .serializers import (
     FavoriteSerializer,
     IngredientSerializer,
     RecipeCreateSerializer,
+    RecipeGetShortLinkSerializer,
     RecipeSerializer,
     SetAvatarSerializer,
     ShoppingCartSerializer,
     SubscriptionSerializer,
     TagSerializer,
-    # UserWithRecipesSerializer
+    UserWithRecipesSerializer
 )
 
 User = get_user_model()
@@ -45,12 +47,38 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     pagination_class = CustomPagination
+    permission_classes = [AllowAny]
+
+    def get_permissions(self):
+        """Разные permissions для разных действий."""
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        elif self.action in [
+            'update',
+            'partial_update',
+            'destroy',
+            'subscriptions',
+            'subscribe',
+            'me'
+        ]:
+            return [IsAuthenticated()]
+        return [AllowAny()]
 
     def get_serializer_class(self):
         """Возвращает класс сериализатора в зависимости от действия."""
         if self.action == 'create':
             return CustomUserSerializer
+        elif self.action == 'retrieve':
+            return UserWithRecipesSerializer
         return CustomUserSerializer
+
+    def retrieve(self, request, pk=None):
+        """Возвращает страницу пользователя."""
+        print(f"Retrieving user with pk: {pk}")  
+        print(f"Request user: {request.user}")  
+        user = get_object_or_404(User, pk=pk)
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
 
     @action(
         detail=False,
@@ -104,9 +132,9 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def subscriptions(self, request):
         """Возвращает подписки пользователя."""
-        subscriptions = Subscription.objects.filter(user=request.user)
-        page = self.paginate_queryset(subscriptions)
-        serializer = SubscriptionSerializer(
+        authors = User.objects.filter(subscribers__user=request.user)
+        page = self.paginate_queryset(authors)
+        serializer = UserWithRecipesSerializer(
             page,
             many=True,
             context={'request': request}
@@ -296,3 +324,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             shopping_cart.delete()
             return Response(status=HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=True,
+        methods=['get'],
+        permission_classes=[AllowAny]
+    )
+    def get_link(self, request, pk=None):
+        """Возвращает короткую ссылку на рецепт."""
+        get_object_or_404(Recipe, pk=pk)
+        short_link = f"{request.scheme}://{request.get_host()}/s/{pk}"
+        serializer = RecipeGetShortLinkSerializer({"short_link": short_link})
+        return Response(serializer.data)

@@ -9,10 +9,15 @@ def home(request):
     return redirect('/api/')
 
 
+def short_url(request, short_link):
+    return redirect(f"{settings.FRONTEND_BASE_URL}/recipes/{short_link}")
+
+
 urlpatterns = [
     path('', home, name='home'),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    path('s/<slug:short_link>/', short_url, name='short_url'),
 ]
 
 if settings.DEBUG:
