@@ -74,8 +74,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         """Возвращает страницу пользователя."""
-        print(f"Retrieving user with pk: {pk}")  
-        print(f"Request user: {request.user}")  
+        print(f"Retrieving user with pk: {pk}")
+        print(f"Request user: {request.user}")
         user = get_object_or_404(User, pk=pk)
         serializer = self.get_serializer(user)
         return Response(serializer.data)
