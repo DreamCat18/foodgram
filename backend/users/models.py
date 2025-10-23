@@ -12,6 +12,8 @@ from backend.constants import (
     VERBOSE_NAME_LAST_NAME,
 )
 
+from .manager import CustomUserManager
+
 
 class CustomUser(AbstractUser):
     """Модель пользователя."""
@@ -39,6 +41,8 @@ class CustomUser(AbstractUser):
         blank=True,
         null=True
     )
+
+    objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']

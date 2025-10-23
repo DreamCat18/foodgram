@@ -2,6 +2,7 @@ from pathlib import Path
 
 from backend.constants import DEFAULT_PAGE_SIZE
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -124,6 +125,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
+AUTHENTICATION_BACKENDS = [
+    'users.auth_backend.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
@@ -148,3 +154,17 @@ DJOSER = {
 }
 
 FRONTEND_BASE_URL = 'http://localhost:3000'
+
+# DJOSER = {
+#     'LOGIN_FIELD': 'email',
+#     'HIDE_USERS': False,
+#     'SERIALIZERS': {
+#         'user_create': 'api.serializers.UserPostSerializer',
+#         'user': 'api.serializers.UserGetSerializer',
+#         'current_user': 'api.serializers.UserGetSerializer',
+#     },
+#     'PERMISSIONS': {
+#         'user': ('rest_framework.permissions.IsAuthenticatedOrReadOnly',),
+#         'user_list': ('rest_framework.permissions.AllowAny',),
+#     }
+# }
