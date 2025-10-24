@@ -29,7 +29,7 @@ class Base64ImageField(serializers.ImageField):
         return super().to_internal_value(data)
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
+class UserGetSerializer(serializers.ModelSerializer):
     """Сериализатор для пользователя."""
 
     is_subscribed = serializers.SerializerMethodField()
@@ -52,7 +52,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return False
 
 
-class CustomUserCreateSerializer(serializers.ModelSerializer):
+class UserPostSerializer(serializers.ModelSerializer):
     """Сериализатор для создания пользователя."""
 
     class Meta:
@@ -121,7 +121,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для рецепта."""
 
     tags = TagSerializer(many=True, read_only=True)
-    author = CustomUserSerializer(read_only=True)
+    author = UserGetSerializer(read_only=True)
     ingredients = IngredientInRecipeSerializer(
         source='recipe_ingredients',
         many=True,

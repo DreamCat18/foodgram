@@ -13,7 +13,8 @@ UPLOAD_PATH_RECIPES = 'recipes/'
 UPLOAD_PATH_USERS = 'users/'
 
 # Размеры пагинации
-DEFAULT_PAGE_SIZE = 6
+PAGE_SIZE = 6
+DEFAULT_PAGE_SIZE = PAGE_SIZE
 
 # Минимальные значения
 MIN_VALUE_AMOUNT = 1

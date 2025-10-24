@@ -26,7 +26,8 @@ from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
-    CustomUserSerializer,
+    UserGetSerializer,
+    UserPostSerializer,
     FavoriteSerializer,
     IngredientSerializer,
     RecipeCreateSerializer,
@@ -67,10 +68,10 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         """Возвращает класс сериализатора в зависимости от действия."""
         if self.action == 'create':
-            return CustomUserSerializer
+            return UserPostSerializer
         elif self.action == 'retrieve':
             return UserWithRecipesSerializer
-        return CustomUserSerializer
+        return UserGetSerializer
 
     def retrieve(self, request, pk=None):
         """Возвращает страницу пользователя."""
@@ -87,7 +88,7 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def me(self, request):
         """Возвращает данные текущего пользователя."""
-        serializer = CustomUserSerializer(
+        serializer = UserGetSerializer(
             request.user,
             context={'request': request}
         )

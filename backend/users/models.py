@@ -13,7 +13,7 @@ from backend.constants import (
 )
 
 
-class CustomUser(AbstractUser):
+class user(AbstractUser):
     """Модель пользователя."""
 
     email = models.EmailField(
