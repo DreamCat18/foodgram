@@ -2,7 +2,7 @@ import django_filters as filters
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import FilterSet
 
-from recipes.models import Ingredient, Recipe
+from recipes.models import Ingredient, Recipe, Tag
 
 User = get_user_model()
 
@@ -23,8 +23,9 @@ class IngredientFilter(FilterSet):
 class RecipeFilter(FilterSet):
     """Фильтр для рецептов."""
 
-    tags = filters.AllValuesMultipleFilter(
+    tags = filters.MultipleChoiceFilter(
         field_name='tags__slug',
+        choices=lambda: [(tag.slug, tag.slug) for tag in Tag.objects.all()],
         conjoined=False
     )
     author = filters.ModelChoiceFilter(
