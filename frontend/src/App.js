@@ -92,36 +92,40 @@ function App() {
   };
 
   const authorization = ({ email, password }) => {
-    api
-      .signin({
-        email,
-        password,
-      })
-      .then((res) => {
+    setAuthError({ submitError: "" });
+    console.log("Attempting login with:", { email, password });
+
+    api.signin({ email, password })
+    .then((res) => {
         if (res.auth_token) {
-          localStorage.setItem("token", res.auth_token);
-          api
-            .getUserData()
-            .then((res) => {
-              setUser(res);
-              setLoggedIn(true);
-              getOrders();
+            localStorage.setItem("token", res.auth_token);
+            api.getUserData()
+            .then((userData) => {
+                setUser(userData);
+                setLoggedIn(true);
+                getOrders();
+                history.push("/recipes"); // Редирект после успешного входа
             })
             .catch((err) => {
-              setLoggedIn(false);
-              history.push("/signin");
+                console.error("Error getting user data:", err);
+                setLoggedIn(false);
             });
         } else {
-          setLoggedIn(false);
+            setAuthError({ submitError: "No auth token received" });
+            setLoggedIn(false);
         }
-      })
-      .catch((err) => {
-        const errors = Object.values(err);
-        if (errors) {
-          setAuthError({ submitError: errors.join(", ") });
+    })
+    .catch((err) => {
+        console.error("Login error:", err);
+        if (err.status === 400) {
+            setAuthError({ submitError: "Invalid email or password format" });
+        } else if (err.status === 401) {
+            setAuthError({ submitError: "Invalid credentials" });
+        } else {
+            setAuthError({ submitError: "Unable to log in with provided credentials." });
         }
         setLoggedIn(false);
-      });
+    });
   };
 
   const onPasswordReset = ({ email }) => {

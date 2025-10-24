@@ -3,6 +3,7 @@ import base64
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.db import transaction
+from djoser.serializers import TokenCreateSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -361,3 +362,12 @@ class RecipeGetShortLinkSerializer(serializers.Serializer):
     """Сериализатор для короткой ссылки на рецепт."""
 
     short_link = serializers.URLField()
+
+
+class CustomTokenCreateSerializer(TokenCreateSerializer):
+    """Кастомный сериализатор для создания токена."""
+
+    def validate(self, attrs):
+        """Валидирует данные для создания токена."""
+        attrs['username'] = attrs.get('email')
+        return super().validate(attrs)
