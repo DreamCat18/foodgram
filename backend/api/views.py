@@ -49,6 +49,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     pagination_class = CustomPagination
     permission_classes = [AllowAny]
+    lookup_value_regex = r'[0-9]+'
 
     def get_permissions(self):
         """Разные permissions для разных действий."""
