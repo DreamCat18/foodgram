@@ -1,8 +1,7 @@
-# from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -31,7 +30,6 @@ from .serializers import (
     FavoriteSerializer,
     IngredientSerializer,
     RecipeCreateSerializer,
-    RecipeGetShortLinkSerializer,
     RecipeSerializer,
     SetAvatarSerializer,
     ShoppingCartSerializer,
@@ -345,12 +343,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=['get'],
-        permission_classes=[AllowAny]
+        methods=('GET',),
+        url_path='get-link',
     )
-    def get_link(self, request, pk=None):
-        """Возвращает короткую ссылку на рецепт."""
+    def get_link(self, request, pk):
         get_object_or_404(Recipe, pk=pk)
-        short_link = f"{request.scheme}://{request.get_host()}/s/{pk}"
-        serializer = RecipeGetShortLinkSerializer({"short_link": short_link})
-        return Response(serializer.data)
+        lnk = request.build_absolute_uri(f'/recipe/{pk}')
+        return Response(
+            {'short-link': f'{lnk}'},
+            status=status.HTTP_200_OK
+        )
+
+    @action(
+        detail=False,
+        methods=('GET',),
+        permission_classes=(AllowAny,),
+        url_path='s/<str:short_link>',
+    )
+    def get_short_link(self, request, short_link):
+        recipe = get_object_or_404(Recipe, short_link=short_link)
+        return redirect(recipe.get_abs_url())
