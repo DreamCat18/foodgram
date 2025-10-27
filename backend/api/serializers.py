@@ -38,6 +38,7 @@ class UserGetSerializer(serializers.ModelSerializer):
     """Сериализатор для пользователя."""
 
     is_subscribed = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -60,6 +61,13 @@ class UserGetSerializer(serializers.ModelSerializer):
                 user=request.user, author=obj
             ).exists()
         return False
+
+    def get_avatar(self, obj):
+        """Возвращает полный URL аватара."""
+        request = self.context.get('request')
+        if obj.avatar and request:
+            return request.build_absolute_uri(obj.avatar.url)
+        return None
 
 
 class UserPostSerializer(serializers.ModelSerializer):
@@ -295,6 +303,7 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
@@ -324,6 +333,13 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
         """Возвращает количество рецептов."""
         return obj.recipes.count()
 
+    def get_avatar(self, obj):
+        """Возвращает полный URL аватара."""
+        request = self.context.get('request')
+        if obj.avatar and request:
+            return request.build_absolute_uri(obj.avatar.url)
+        return None
+
     class Meta:
         model = User
         fields = (
@@ -349,6 +365,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
         """Всегда True для подписок."""
@@ -381,6 +398,13 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         """Возвращает общее количество рецептов автора."""
         return obj.author.recipes.count()
 
+    def get_avatar(self, obj):
+        """Возвращает полный URL аватара автора."""
+        request = self.context.get('request')
+        if obj.author.avatar and request:
+            return request.build_absolute_uri(obj.author.avatar.url)
+        return None
+
     class Meta:
         model = Subscription
         fields = (
@@ -390,6 +414,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'is_subscribed',
+            'avatar',
             'recipes',
             'recipes_count'
         )
