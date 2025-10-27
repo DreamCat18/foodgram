@@ -326,8 +326,17 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count')
+        fields = (
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'avatar',
+            'recipes',
+            'recipes_count'
+        )
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
