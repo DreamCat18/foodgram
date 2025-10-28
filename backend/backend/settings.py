@@ -24,8 +24,6 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['89.169.169.60', '127.0.0.1', 'localhost', 'foodgramchik.ddns.net']
 
-
-
 # Application definition
 
 INSTALLED_APPS = [
