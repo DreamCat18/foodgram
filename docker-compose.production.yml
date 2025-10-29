@@ -18,7 +18,7 @@ services:
     depends_on:
       - db
     volumes:
-      - static_volume:/collected_static
+      - static_volume:/backend_static
       - media_volume:/app/media
     command: ["gunicorn", "--bind", "0.0.0.0:8000", "backend.wsgi"]
 
