@@ -4,20 +4,12 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.db import transaction
 from djoser.serializers import TokenCreateSerializer
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Subscription, Tag)
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from backend.constants import MIN_VALUE_AMOUNT
-
-from recipes.models import (
-    Favorite,
-    Ingredient,
-    Recipe,
-    RecipeIngredient,
-    ShoppingCart,
-    Subscription,
-    Tag
-)
 
 User = get_user_model()
 

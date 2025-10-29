@@ -1,42 +1,25 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart,
+                            Subscription, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from backend.constants import (
-    HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
-    HTTP_400_BAD_REQUEST,
-)
-
-from recipes.models import (
-    Favorite,
-    Ingredient,
-    Recipe,
-    ShoppingCart,
-    Subscription,
-    Tag
-)
+from backend.constants import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
+                               HTTP_400_BAD_REQUEST)
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (
-    UserGetSerializer,
-    UserPostSerializer,
-    FavoriteSerializer,
-    IngredientSerializer,
-    RecipeCreateSerializer,
-    RecipeSerializer,
-    SetAvatarSerializer,
-    ShoppingCartSerializer,
-    SubscriptionSerializer,
-    TagSerializer,
-    UserWithRecipesSerializer
-)
+from .serializers import (FavoriteSerializer, IngredientSerializer,
+                          RecipeCreateSerializer, RecipeSerializer,
+                          SetAvatarSerializer, ShoppingCartSerializer,
+                          SubscriptionSerializer, TagSerializer,
+                          UserGetSerializer, UserPostSerializer,
+                          UserWithRecipesSerializer)
 
 User = get_user_model()
 
