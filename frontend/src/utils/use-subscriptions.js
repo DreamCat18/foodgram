@@ -2,19 +2,10 @@ import React, { useState } from "react";
 import { useTags } from './index.js'
 import api from '../api'
 
-export default function useSubscriptions () {
+export default function useRecipes () {
   const [ subscriptions, setSubscriptions ] = useState([])
   const [ subscriptionsPage, setSubscriptionsPage ] = useState(1)
   const [ subscriptionsCount, setSubscriptionsCount ] = useState(0)
-
-  const getSubscriptions = ({ page }) => {
-    api
-      .getSubscriptions({ page })
-      .then(res => {
-        setSubscriptions(res.results)
-        setSubscriptionsCount(res.count)
-      })
-  }
 
   const removeSubscription = ({ id, callback }) => {
     api
@@ -34,13 +25,12 @@ export default function useSubscriptions () {
         }
       })
   }
-
+  
   return {
     subscriptions,
     setSubscriptions,
     subscriptionsPage,
     setSubscriptionsPage,
-    getSubscriptions,
     removeSubscription,
     subscriptionsCount,
     setSubscriptionsCount

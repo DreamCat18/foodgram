@@ -22,7 +22,7 @@ const Favorites = ({ updateOrders }) => {
   
   const getRecipes = ({ page = 1, tags }) => {
     api
-      .getFavorites({ page, tags })
+      .getRecipes({ page, is_favorited: Number(true), tags })
       .then(res => {
         const { results, count } = res
         setRecipes(results)

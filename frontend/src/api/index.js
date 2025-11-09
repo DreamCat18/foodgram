@@ -157,26 +157,6 @@ class Api {
     ).then(this.checkResponse);
   }
 
-  getFavorites({ page = 1, limit = 6, tags } = {}) {
-    const token = localStorage.getItem("token");
-    const tagsString = tags
-      ? tags
-          .filter((tag) => tag.value)
-          .map((tag) => `&tags=${tag.slug}`)
-          .join("")
-      : "";
-    return fetch(
-      `/api/recipes/favorites/?page=${page}&limit=${limit}${tagsString}`,
-      {
-        method: "GET",
-        headers: {
-          ...this._headers,
-          authorization: `Token ${token}`,
-        },
-      }
-    ).then(this.checkResponse);
-  }
-
   getRecipe({ recipe_id }) {
     const token = localStorage.getItem("token");
     const authorization = token ? { authorization: `Token ${token}` } : {};
@@ -398,5 +378,5 @@ class Api {
 }
 
 export default new Api(process.env.API_URL || "http://localhost", {
-  "Content-Type": "application/json",
+  "content-type": "application/json",
 });
