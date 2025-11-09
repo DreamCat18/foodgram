@@ -226,6 +226,37 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateSerializer
         return RecipeSerializer
 
+    def create(self, request, *args, **kwargs):
+        """Создает рецепт и возвращает данные с RecipeSerializer."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        response_serializer = RecipeSerializer(
+            instance, context={'request': request}
+        )
+        return Response(
+            response_serializer.data, status=status.HTTP_201_CREATED
+        )
+
+    def update(self, request, *args, **kwargs):
+        """Обновляет рецепт и возвращает данные с RecipeSerializer."""
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        response_serializer = RecipeSerializer(
+            instance, context={'request': request}
+        )
+        return Response(response_serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        """Частично обновляет рецепт."""
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
     @action(
         detail=False,
         methods=['get'],
