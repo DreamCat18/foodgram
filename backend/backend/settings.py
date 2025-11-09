@@ -24,6 +24,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['89.169.169.60', '127.0.0.1', 'localhost', 'foodgramchik.ddns.net']
 
+CSRF_TRUSTED_ORIGINS = ['https://foodgramchik.ddns.net']
+
 # Application definition
 
 INSTALLED_APPS = [

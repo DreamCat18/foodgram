@@ -1,51 +1,7 @@
-# version: '3.3'
-
-# volumes:
-#   media_volume: null
-#   pg_data: null
-#   static_volume: null
-
-# services:
-#   db:
-#     image: postgres:13.10
-#     env_file: .env
-#     volumes:
-#       - pg_data:/var/lib/postgresql/data
-
-#   backend:
-#     image: dreamcat18/foodgram_backend
-#     env_file: .env
-#     depends_on:
-#       - db
-#     volumes:
-#       - static_volume:/backend_static
-#       - media_volume:/app/media
-#     command: ["gunicorn", "--bind", "0.0.0.0:8000", "backend.wsgi"]
-
-#   frontend:
-#     image: dreamcat18/foodgram_frontend
-#     env_file: .env
-#     command: cp -r /app/build/. /frontend_static/
-#     volumes:
-#       - static_volume:/frontend_static
-
-#   gateway:
-#     image: dreamcat18/foodgram_gateway
-#     env_file: .env
-#     depends_on:
-#       - backend
-#       - frontend
-#     volumes:
-#       - static_volume:/static
-#       - media_volume:/media
-#     ports:
-#       - 8000:80
-version: '3.3'
-
 volumes:
-  media_volume: null
-  pg_data: null
-  static_volume: null
+  media_volume:
+  pg_data:
+  static_volume:
 
 services:
   db:
@@ -53,45 +9,31 @@ services:
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
-    restart: unless-stopped
 
   backend:
-    build: ./backend
+    image: dreamcat18/foodgram_backend
     env_file: .env
     depends_on:
       - db
     volumes:
       - static_volume:/backend_static
       - media_volume:/app/media
-    command: |
-      sh -c "
-        python manage.py collectstatic --noinput &&
-        python manage.py migrate &&
-        gunicorn --bind 0.0.0.0:8000 backend.wsgi
-      "
-    restart: unless-stopped
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "backend.wsgi"]
 
   frontend:
-    build: ./frontend
-    env_file: .env
-    command: |
-      sh -c "
-        cp -r /app/build/. /frontend_static/ &&
-        chmod -R 755 /frontend_static/
-      "
+    image: dreamcat18/foodgram_frontend
+    command: cp -r /app/build/. /frontend_static/
     volumes:
       - static_volume:/frontend_static
-    restart: unless-stopped
 
   gateway:
-    build: ./nginx
-    env_file: .env
+    image: dreamcat18/foodgram_gateway
     depends_on:
       - backend
-      - frontend
     volumes:
-      - static_volume:/usr/share/nginx/html/static
-      - media_volume:/usr/share/nginx/html/media
+      - static_volume:/staticfiles
+      - media_volume:/media
     ports:
       - 8000:80
-    restart: unless-stopped
+
+
