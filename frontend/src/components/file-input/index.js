@@ -23,6 +23,8 @@ const FileInput = ({
   }, [file])
 
   const getBase64 = (file) => {
+    if (!file) return;
+
     const reader = new FileReader()
 
     if (fileSize && ((file.size / 1000) > fileSize)) {
