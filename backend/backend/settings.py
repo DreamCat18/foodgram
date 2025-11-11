@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-# from django.core.management.utils import get_random_secret_key
+from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
 from backend.constants import PAGE_SIZE
@@ -17,14 +17,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8w^vnjwucsy6e+ajd^ot3z-thzjn53^8jh7=w83_-(f&q9zl$r'
+SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['89.169.169.60', '127.0.0.1', 'localhost', 'foodgramchik.ddns.net']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 
-CSRF_TRUSTED_ORIGINS = ['https://foodgramchik.ddns.net']
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://foodgramchik.ddns.net').split(',')
 
 # Application definition
 

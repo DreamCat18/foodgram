@@ -20,7 +20,7 @@ from rest_framework.response import Response
 from backend.constants import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from .filters import IngredientFilter, RecipeFilter
-from .pagination import CustomPagination
+from .paginations import CustomPagination
 from .permissions import IsAuthorOrReadOnlyPermission
 from .serializers import (
     FavoriteSerializer,
