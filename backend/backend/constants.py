@@ -15,6 +15,7 @@ UPLOAD_PATH_USERS = 'users/'
 # Размеры пагинации
 PAGE_SIZE = 6
 DEFAULT_PAGE_SIZE = PAGE_SIZE
+PAGE_SIZE_QUERY_PARAM = 'limit'
 
 # Минимальные значения
 MIN_VALUE_AMOUNT = 1
