@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import Subscription, UserAdmin
 
 User = get_user_model()
 
@@ -15,3 +15,14 @@ class CustomUserAdmin(UserAdmin):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'author')
+    search_fields = (
+        'user__username',
+        'user__email', 
+        'author__username',
+        'author__email'
+    )
