@@ -1,7 +1,7 @@
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
-class IsAuthorOrReadOnly(BasePermission):
+class IsAuthorOrReadOnlyPermission(BasePermission):
     """Разрешение, позволяющее редактировать объект только автору."""
 
     def has_object_permission(self, request, view, obj):
