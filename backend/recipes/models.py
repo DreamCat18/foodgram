@@ -5,30 +5,28 @@ from django.db import models
 from backend.constants import (
     MAX_LENGTH_MEASUREMENT_UNIT,
     MAX_LENGTH_NAME_INGREDIENT,
-    MAX_LENGTH_NAME_RECIPE, 
+    MAX_LENGTH_NAME_RECIPE,
     MAX_LENGTH_NAME_TAG,
-    MAX_LENGTH_SLUG_TAG, 
+    MAX_LENGTH_SLUG_TAG,
     MIN_VALUE_AMOUNT,
-    MIN_VALUE_COOKING_TIME, 
-    RELATED_NAME_FAVORITES,
+    MIN_VALUE_COOKING_TIME,
     RELATED_NAME_RECIPE_INGREDIENTS,
     RELATED_NAME_RECIPES,
-    RELATED_NAME_SHOPPING_CART,
     RELATED_NAME_SUBSCRIBERS,
-    RELATED_NAME_SUBSCRIPTIONS, 
+    RELATED_NAME_SUBSCRIPTIONS,
     UPLOAD_PATH_RECIPES,
-    VERBOSE_NAME_AMOUNT, 
+    VERBOSE_NAME_AMOUNT,
     VERBOSE_NAME_AUTHOR,
-    VERBOSE_NAME_COOKING_TIME, 
+    VERBOSE_NAME_COOKING_TIME,
     VERBOSE_NAME_IMAGE,
     VERBOSE_NAME_INGREDIENT,
     VERBOSE_NAME_INGREDIENTS,
     VERBOSE_NAME_MEASUREMENT_UNIT,
-    VERBOSE_NAME_NAME, 
+    VERBOSE_NAME_NAME,
     VERBOSE_NAME_PUB_DATE,
-    VERBOSE_NAME_RECIPE, 
+    VERBOSE_NAME_RECIPE,
     VERBOSE_NAME_SLUG,
-    VERBOSE_NAME_TAGS, 
+    VERBOSE_NAME_TAGS,
     VERBOSE_NAME_TEXT,
     VERBOSE_NAME_USER
 )
@@ -121,7 +119,13 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         VERBOSE_NAME_COOKING_TIME,
-        validators=[MinValueValidator(MIN_VALUE_COOKING_TIME)]
+        validators=[MinValueValidator(
+            MIN_VALUE_COOKING_TIME,
+            message=(
+                f'Время приготовления не может быть'
+                f'меньше {MIN_VALUE_COOKING_TIME} минуты.'
+            )
+        )]
     )
     pub_date = models.DateTimeField(
         VERBOSE_NAME_PUB_DATE,
@@ -155,7 +159,13 @@ class RecipeIngredient(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         VERBOSE_NAME_AMOUNT,
-        validators=[MinValueValidator(MIN_VALUE_AMOUNT)]
+        validators=[MinValueValidator(
+            MIN_VALUE_AMOUNT,
+            message=(
+                f'Количество ингредиента'
+                f'не может быть меньше {MIN_VALUE_AMOUNT}.'
+            )
+        )]
     )
 
     class Meta:
@@ -173,21 +183,26 @@ class RecipeIngredient(models.Model):
         return f'{self.ingredient} в {self.recipe}'
 
 
-class Favorite(models.Model):
-    """Модель избранного рецепта."""
+class BaseUserRecipeRelation(models.Model):
+    """Базовая модель для отношений пользователя и рецепта."""
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name=RELATED_NAME_FAVORITES,
         verbose_name=VERBOSE_NAME_USER
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name=RELATED_NAME_FAVORITES,
         verbose_name=VERBOSE_NAME_RECIPE
     )
+
+    class Meta:
+        abstract = True
+
+
+class Favorite(BaseUserRecipeRelation):
+    """Модель избранного рецепта."""
 
     class Meta:
         verbose_name = 'Избранное'
@@ -204,21 +219,8 @@ class Favorite(models.Model):
         return f'{self.user} добавил {self.recipe} в избранное'
 
 
-class ShoppingCart(models.Model):
+class ShoppingCart(BaseUserRecipeRelation):
     """Модель списка покупок."""
-
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name=RELATED_NAME_SHOPPING_CART,
-        verbose_name=VERBOSE_NAME_USER
-    )
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name=RELATED_NAME_SHOPPING_CART,
-        verbose_name=VERBOSE_NAME_RECIPE
-    )
 
     class Meta:
         verbose_name = 'Список покупок'
