@@ -21,7 +21,7 @@ from backend.constants import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
-from .permissions import IsAuthorOrReadOnly
+from .permissions import IsAuthorOrReadOnlyPermission
 from .serializers import (
     FavoriteSerializer,
     IngredientSerializer,
@@ -72,10 +72,10 @@ class UserViewSet(viewsets.ModelViewSet):
         return UserGetSerializer
 
     @action(
-            detail=False, 
-            methods=['get'], 
-            permission_classes=[IsAuthenticated]
-        )
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAuthenticated]
+    )
     def me(self, request):
         """Возвращает данные текущего пользователя."""
         serializer = self.get_serializer(request.user)
@@ -119,14 +119,15 @@ class UserViewSet(viewsets.ModelViewSet):
         """Возвращает queryset для подписок."""
         return Subscription.objects.filter(
             user=self.request.user
-            ).select_related(
+        ).select_related(
             'author'
         )
 
     @action(
-            detail=False, methods=['get'], 
-            permission_classes=[IsAuthenticated]
-        )
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAuthenticated]
+    )
     def subscriptions(self, request):
         """Возвращает подписки пользователя."""
         queryset = self.get_subscriptions_queryset()
@@ -147,9 +148,10 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(
-            detail=True, methods=['post'], 
-            permission_classes=[IsAuthenticated]
-        )
+        detail=True,
+        methods=['post'],
+        permission_classes=[IsAuthenticated]
+    )
     def subscribe(self, request, pk=None):
         """Подписывается на пользователя."""
         author = get_object_or_404(User, pk=pk)
@@ -197,7 +199,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     pagination_class = CustomPagination
-    permission_classes = [IsAuthorOrReadOnly]
+    permission_classes = [IsAuthorOrReadOnlyPermission]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
@@ -208,14 +210,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeSerializer
 
     def _add_relation(
-            self, 
-            request, 
-            pk, 
-            serializer_class, 
-            model_class, 
-            error_message
-        ):
-
+        self,
+        request,
+        pk,
+        serializer_class,
+        model_class,
+        error_message
+    ):
         """Общий метод для добавления связи."""
         recipe = get_object_or_404(Recipe, pk=pk)
         serializer = serializer_class(
@@ -238,17 +239,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(
-            detail=True, 
-            methods=['post'], 
-            permission_classes=[IsAuthenticated]
-        )
+        detail=True,
+        methods=['post'],
+        permission_classes=[IsAuthenticated]
+    )
     def favorite(self, request, pk=None):
         """Добавляет рецепт в избранное."""
         return self._add_relation(
-            request, 
-            pk, 
-            FavoriteSerializer, 
-            Favorite, 
+            request,
+            pk,
+            FavoriteSerializer,
+            Favorite,
             'Рецепт уже в избранном.'
         )
 
@@ -258,17 +259,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self._remove_relation(request, pk, Favorite)
 
     @action(
-            detail=True, 
-            methods=['post'], 
-            permission_classes=[IsAuthenticated]
-        )
+        detail=True,
+        methods=['post'],
+        permission_classes=[IsAuthenticated]
+    )
     def shopping_cart(self, request, pk=None):
         """Добавляет рецепт в корзину."""
         return self._add_relation(
-            request, 
-            pk, 
-            ShoppingCartSerializer, 
-            ShoppingCart, 
+            request,
+            pk,
+            ShoppingCartSerializer,
+            ShoppingCart,
             'Рецепт уже в корзине.'
         )
 
@@ -278,10 +279,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self._remove_relation(request, pk, ShoppingCart)
 
     @action(
-            detail=False, 
-            methods=['get'], 
-            permission_classes=[IsAuthenticated]
-        )
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAuthenticated]
+    )
     def download_shopping_cart(self, request):
         """Скачивает список покупок."""
         recipes = Recipe.objects.filter(shoppingcart__user=request.user)
@@ -293,14 +294,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         content_lines = ['Список покупок:\n']
         content_lines.extend(
-            f'• {name}: {amount} {unit}' for (name, unit), amount in
-            ingredients.items()
+            f'• {name}: {amount} {unit}'
+            for (name, unit), amount in ingredients.items()
         )
         content_lines.append(f'\nВсего позиций: {len(ingredients)}')
         content = '\n'.join(content_lines)
 
-        response = HttpResponse(content, content_type='text/plain; charset=utf-8')
-        response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
+        response = HttpResponse(
+            content, 
+            content_type='text/plain; charset=utf-8'
+        )
+        response['Content-Disposition'] = (
+            'attachment; filename="shopping_list.txt"'
+        )
         return response
 
     @action(detail=True, methods=['get'], permission_classes=[AllowAny])
