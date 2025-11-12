@@ -264,7 +264,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """Создает рецепт."""
         ingredients_data = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
-        
+
         recipe = Recipe.objects.create(
             author=self.context['request'].user,
             **validated_data,
@@ -279,14 +279,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """Обновляет рецепт."""
         ingredients_data = validated_data.pop('ingredients', None)
         tags_data = validated_data.pop('tags', None)
-        
+
         if ingredients_data is not None:
             instance.ingredients.clear()
             self._create_recipe_ingredients(instance, ingredients_data)
-        
+
         if tags_data is not None:
             instance.tags.set(tags_data)
-        
+
         return super().update(instance, validated_data)
 
 
@@ -344,13 +344,13 @@ class UserWithRecipesSerializer(UserGetSerializer):
             if request else None
         )
         recipes = obj.recipes.all()
-        
+
         if recipes_limit:
             try:
                 recipes = recipes[:int(recipes_limit)]
             except ValueError:
                 pass
-        
+
         return RecipeShortSerializer(
             recipes,
             many=True,
