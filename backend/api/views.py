@@ -91,12 +91,12 @@ class UserViewSet(viewsets.ModelViewSet):
         """Устанавливает аватар пользователя."""
         if pk != 'me':
             return Response(
-                {'error': 'Invalid request'}, 
+                {'error': 'Invalid request'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         serializer = SetAvatarSerializer(
-            request.user, 
-            data=request.data, 
+            request.user,
+            data=request.data,
             partial=True
         )
         serializer.is_valid(raise_exception=True)
@@ -108,7 +108,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """Удаляет аватар пользователя."""
         if pk != 'me':
             return Response(
-                {'error': 'Invalid request'}, 
+                {'error': 'Invalid request'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         if request.user.avatar:
@@ -135,8 +135,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
         if page is not None:
             serializer = UserWithRecipesSerializer(
-                [sub.author for sub in page], 
-                many=True, 
+                [sub.author for sub in page],
+                many=True,
                 context={'request': request}
             )
             return self.get_paginated_response(serializer.data)
@@ -168,8 +168,8 @@ class UserViewSet(viewsets.ModelViewSet):
         """Отписывается от пользователя."""
         author = get_object_or_404(User, pk=pk)
         subscription = get_object_or_404(
-            Subscription, 
-            user=request.user, 
+            Subscription,
+            user=request.user,
             author=author
         )
         subscription.delete()
@@ -231,8 +231,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Общий метод для удаления связи."""
         recipe = get_object_or_404(Recipe, pk=pk)
         relation = get_object_or_404(
-            model_class, 
-            user=request.user, 
+            model_class,
+            user=request.user,
             recipe=recipe
         )
         relation.delete()
@@ -301,7 +301,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         content = '\n'.join(content_lines)
 
         response = HttpResponse(
-            content, 
+            content,
             content_type='text/plain; charset=utf-8'
         )
         response['Content-Disposition'] = (

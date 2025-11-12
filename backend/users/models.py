@@ -46,16 +46,16 @@ class User(AbstractUser):
 
     def clean(self):
         """Валидация модели."""
-        super().clean()       
+        super().clean()
         if self.username.lower() == 'me':
             raise ValidationError({
                 'username': 'Имя пользователя "me" не разрешено.'
             })
-             
+
     def __str__(self):
         """Возвращает строковое представление пользователя."""
 
-        return self.email  
+        return self.email
 
     def save(self, *args, **kwargs):
         """Сохранение с предварительной очисткой."""

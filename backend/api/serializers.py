@@ -55,9 +55,9 @@ class UserGetSerializer(serializers.ModelSerializer):
         """Проверяет, подписан ли текущий пользователь на данного."""
         request = self.context.get('request')
         return (
-            request and
-            request.user.is_authenticated and
-            Subscription.objects.filter(
+            request
+            and request.user.is_authenticated
+            and Subscription.objects.filter(
                 user=request.user,
                 author=obj,
             ).exists()
@@ -234,11 +234,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise ValidationError(
                 'Необходимо указать хотя бы один ингредиент.'
             )
-        
+
         ingredient_ids = [item['id'] for item in value]
         if len(ingredient_ids) != len(set(ingredient_ids)):
             raise ValidationError('Ингредиенты должны быть уникальными.')
-        
+
         return value
 
     def validate_tags(self, value):
@@ -269,7 +269,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             author=self.context['request'].user,
             **validated_data,
         )
-        
+
         recipe.tags.set(tags_data)
         self._create_recipe_ingredients(recipe, ingredients_data)
         return recipe
@@ -387,13 +387,13 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
         """Валидирует данные для подписки."""
         if data['user'] == data['author']:
             raise ValidationError('Нельзя подписаться на себя.')
-        
+
         if Subscription.objects.filter(
             user=data['user'],
             author=data['author'],
         ).exists():
             raise ValidationError('Вы уже подписаны на этого пользователя.')
-        
+
         return data
 
 
