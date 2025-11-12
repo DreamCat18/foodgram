@@ -285,7 +285,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Скачивает список покупок."""
-        recipes = Recipe.objects.filter(shoppingcart__user=request.user)
+        recipes = Recipe.objects.filter(shopping_cart__user=request.user)
         ingredients = defaultdict(float)
         for recipe in recipes:
             for ri in recipe.recipe_ingredients.all():

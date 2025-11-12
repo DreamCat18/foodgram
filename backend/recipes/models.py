@@ -10,8 +10,10 @@ from backend.constants import (
     MAX_LENGTH_SLUG_TAG,
     MIN_VALUE_AMOUNT,
     MIN_VALUE_COOKING_TIME,
+    RELATED_NAME_FAVORITES,
     RELATED_NAME_RECIPE_INGREDIENTS,
     RELATED_NAME_RECIPES,
+    RELATED_NAME_SHOPPING_CART,
     RELATED_NAME_SUBSCRIBERS,
     RELATED_NAME_SUBSCRIPTIONS,
     UPLOAD_PATH_RECIPES,
@@ -204,6 +206,13 @@ class BaseUserRecipeRelation(models.Model):
 class Favorite(BaseUserRecipeRelation):
     """Модель избранного рецепта."""
 
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name=RELATED_NAME_FAVORITES,
+        verbose_name=VERBOSE_NAME_RECIPE
+    )
+
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
@@ -221,6 +230,13 @@ class Favorite(BaseUserRecipeRelation):
 
 class ShoppingCart(BaseUserRecipeRelation):
     """Модель списка покупок."""
+
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name=RELATED_NAME_SHOPPING_CART,
+        verbose_name=VERBOSE_NAME_RECIPE
+    )
 
     class Meta:
         verbose_name = 'Список покупок'
