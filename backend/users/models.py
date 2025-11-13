@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-from django.contrib.auth import get_user_model
 from django.db import models
 
 from backend.constants import (
@@ -18,20 +17,18 @@ from backend.constants import (
     VERBOSE_NAME_USER
 )
 
-User = get_user_model()
-
 
 class Subscription(models.Model):
     """Модель подписки на автора."""
 
     user = models.ForeignKey(
-        User,
+        'users.User',
         on_delete=models.CASCADE,
         related_name=RELATED_NAME_SUBSCRIPTIONS,
         verbose_name=VERBOSE_NAME_USER
     )
     author = models.ForeignKey(
-        User,
+        'users.User',
         on_delete=models.CASCADE,
         related_name=RELATED_NAME_SUBSCRIBERS,
         verbose_name=VERBOSE_NAME_AUTHOR

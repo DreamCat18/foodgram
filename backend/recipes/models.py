@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -19,8 +18,6 @@ from backend.constants import (MAX_LENGTH_MEASUREMENT_UNIT,
                                VERBOSE_NAME_RECIPE, VERBOSE_NAME_SLUG,
                                VERBOSE_NAME_TAGS, VERBOSE_NAME_TEXT,
                                VERBOSE_NAME_USER)
-
-User = get_user_model()
 
 
 class Tag(models.Model):
@@ -79,7 +76,7 @@ class Recipe(models.Model):
     """Модель рецепта."""
 
     author = models.ForeignKey(
-        User,
+        'users.User',
         on_delete=models.CASCADE,
         related_name=RELATED_NAME_RECIPES,
         verbose_name=VERBOSE_NAME_AUTHOR
@@ -176,7 +173,7 @@ class BaseUserRecipeRelation(models.Model):
     """Базовая модель для отношений пользователя и рецепта."""
 
     user = models.ForeignKey(
-        User,
+        'users.User',
         on_delete=models.CASCADE,
         verbose_name=VERBOSE_NAME_USER
     )

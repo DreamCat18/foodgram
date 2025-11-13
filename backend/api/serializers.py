@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import validate_email
 from django.db import transaction
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Subscription, Tag)
+                            ShoppingCart, Tag)
+from users.models import Subscription
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
