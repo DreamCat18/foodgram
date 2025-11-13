@@ -1,11 +1,10 @@
-from collections import defaultdict
-
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Ingredient, Recipe, ShoppingCart,
-                            Subscription, Tag)
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Subscription, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -32,6 +31,14 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     pagination_class = CustomPagination
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        """Возвращает queryset в зависимости от действия."""
+        if self.action == 'subscriptions':
+            return User.objects.filter(
+                subscribers__user=self.request.user
+            ).prefetch_related('recipes')
+        return super().get_queryset()
 
     def get_permissions(self):
         """Разные permissions для разных действий."""
@@ -102,14 +109,6 @@ class UserViewSet(viewsets.ModelViewSet):
             request.user.avatar.delete()
         return Response(status=HTTP_204_NO_CONTENT)
 
-    def get_subscriptions_queryset(self):
-        """Возвращает queryset для подписок."""
-        return Subscription.objects.filter(
-            user=self.request.user
-        ).select_related(
-            'author'
-        )
-
     @action(
         detail=False,
         methods=['get'],
@@ -117,22 +116,7 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def subscriptions(self, request):
         """Возвращает подписки пользователя."""
-        queryset = self.get_subscriptions_queryset()
-        page = self.paginate_queryset(queryset)
-
-        if page is not None:
-            serializer = UserWithRecipesSerializer(
-                [sub.author for sub in page],
-                many=True,
-                context={'request': request}
-            )
-            return self.get_paginated_response(serializer.data)
-
-        authors = [sub.author for sub in queryset]
-        serializer = UserWithRecipesSerializer(
-            authors, many=True, context={'request': request}
-        )
-        return Response(serializer.data)
+        return self.list(request)
 
     @action(
         detail=True,
@@ -196,14 +180,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateSerializer
         return RecipeSerializer
 
-    def _add_relation(
-        self,
-        request,
-        pk,
-        serializer_class,
-        model_class,
-        error_message
-    ):
+    def _add_relation(self, request, pk, serializer_class, model_class):
         """Общий метод для добавления связи."""
         recipe = get_object_or_404(Recipe, pk=pk)
         serializer = serializer_class(
@@ -237,7 +214,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             pk,
             FavoriteSerializer,
             Favorite,
-            'Рецепт уже в избранном.'
         )
 
     @favorite.mapping.delete
@@ -257,13 +233,33 @@ class RecipeViewSet(viewsets.ModelViewSet):
             pk,
             ShoppingCartSerializer,
             ShoppingCart,
-            'Рецепт уже в корзине.'
         )
 
     @shopping_cart.mapping.delete
     def remove_shopping_cart(self, request, pk=None):
         """Удаляет рецепт из корзины."""
         return self._remove_relation(request, pk, ShoppingCart)
+
+    def _get_shopping_list_content(self, request):
+        """Генерирует содержимое списка покупок."""
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__shopping_cart__user=request.user
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(
+            total_amount=Sum('amount')
+        ).order_by('ingredient__name')
+
+        content_lines = ['Список покупок:\n']
+        for ingredient in ingredients:
+            name = ingredient['ingredient__name']
+            unit = ingredient['ingredient__measurement_unit']
+            amount = ingredient['total_amount']
+            content_lines.append(f'• {name}: {amount} {unit}')
+
+        content_lines.append(f'\nВсего позиций: {len(ingredients)}')
+        return '\n'.join(content_lines)
 
     @action(
         detail=False,
@@ -272,20 +268,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Скачивает список покупок."""
-        recipes = Recipe.objects.filter(shopping_cart__user=request.user)
-        ingredients = defaultdict(float)
-        for recipe in recipes:
-            for ri in recipe.recipe_ingredients.all():
-                key = (ri.ingredient.name, ri.ingredient.measurement_unit)
-                ingredients[key] += ri.amount
-
-        content_lines = ['Список покупок:\n']
-        content_lines.extend(
-            f'• {name}: {amount} {unit}'
-            for (name, unit), amount in ingredients.items()
-        )
-        content_lines.append(f'\nВсего позиций: {len(ingredients)}')
-        content = '\n'.join(content_lines)
+        content = self._get_shopping_list_content(request)
 
         response = HttpResponse(
             content,
