@@ -299,6 +299,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[AllowAny])
     def get_short_link(self, request, pk=None):
         """Возвращает короткую ссылку на рецепт."""
+        import base64
         recipe = get_object_or_404(Recipe, pk=pk)
-        short_link = request.build_absolute_uri(f'/recipes/s/{recipe.slug}/')
+        short_code = base64.urlsafe_b64encode(
+            str(recipe.pk).encode()
+        ).decode().rstrip('=')
+        short_link = request.build_absolute_uri(f'/s/{short_code}/')
         return Response({'short_link': short_link}, status=status.HTTP_200_OK)
