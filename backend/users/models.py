@@ -1,17 +1,11 @@
 from django.contrib.auth.models import AbstractUser
-from django.db import models
 from django.core.exceptions import ValidationError
+from django.db import models
 
-from backend.constants import (
-    MAX_LENGTH_EMAIL,
-    MAX_LENGTH_FIRST_NAME,
-    MAX_LENGTH_LAST_NAME,
-    UPLOAD_PATH_USERS,
-    VERBOSE_NAME_AVATAR,
-    VERBOSE_NAME_EMAIL,
-    VERBOSE_NAME_FIRST_NAME,
-    VERBOSE_NAME_LAST_NAME
-)
+from backend.constants import (MAX_LENGTH_EMAIL, MAX_LENGTH_FIRST_NAME,
+                               MAX_LENGTH_LAST_NAME, UPLOAD_PATH_USERS,
+                               VERBOSE_NAME_AVATAR, VERBOSE_NAME_EMAIL,
+                               VERBOSE_NAME_FIRST_NAME, VERBOSE_NAME_LAST_NAME)
 
 
 class User(AbstractUser):

@@ -2,36 +2,25 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from backend.constants import (
-    MAX_LENGTH_MEASUREMENT_UNIT,
-    MAX_LENGTH_NAME_INGREDIENT,
-    MAX_LENGTH_NAME_RECIPE,
-    MAX_LENGTH_NAME_TAG,
-    MAX_LENGTH_SLUG_TAG,
-    MIN_VALUE_AMOUNT,
-    MIN_VALUE_COOKING_TIME,
-    RELATED_NAME_FAVORITES,
-    RELATED_NAME_RECIPE_INGREDIENTS,
-    RELATED_NAME_RECIPES,
-    RELATED_NAME_SHOPPING_CART,
-    RELATED_NAME_SUBSCRIBERS,
-    RELATED_NAME_SUBSCRIPTIONS,
-    UPLOAD_PATH_RECIPES,
-    VERBOSE_NAME_AMOUNT,
-    VERBOSE_NAME_AUTHOR,
-    VERBOSE_NAME_COOKING_TIME,
-    VERBOSE_NAME_IMAGE,
-    VERBOSE_NAME_INGREDIENT,
-    VERBOSE_NAME_INGREDIENTS,
-    VERBOSE_NAME_MEASUREMENT_UNIT,
-    VERBOSE_NAME_NAME,
-    VERBOSE_NAME_PUB_DATE,
-    VERBOSE_NAME_RECIPE,
-    VERBOSE_NAME_SLUG,
-    VERBOSE_NAME_TAGS,
-    VERBOSE_NAME_TEXT,
-    VERBOSE_NAME_USER
-)
+from backend.constants import (MAX_LENGTH_MEASUREMENT_UNIT,
+                               MAX_LENGTH_NAME_INGREDIENT,
+                               MAX_LENGTH_NAME_RECIPE, MAX_LENGTH_NAME_TAG,
+                               MAX_LENGTH_SLUG_TAG, MIN_VALUE_AMOUNT,
+                               MIN_VALUE_COOKING_TIME, RELATED_NAME_FAVORITES,
+                               RELATED_NAME_RECIPE_INGREDIENTS,
+                               RELATED_NAME_RECIPES,
+                               RELATED_NAME_SHOPPING_CART,
+                               RELATED_NAME_SUBSCRIBERS,
+                               RELATED_NAME_SUBSCRIPTIONS, UPLOAD_PATH_RECIPES,
+                               VERBOSE_NAME_AMOUNT, VERBOSE_NAME_AUTHOR,
+                               VERBOSE_NAME_COOKING_TIME, VERBOSE_NAME_IMAGE,
+                               VERBOSE_NAME_INGREDIENT,
+                               VERBOSE_NAME_INGREDIENTS,
+                               VERBOSE_NAME_MEASUREMENT_UNIT,
+                               VERBOSE_NAME_NAME, VERBOSE_NAME_PUB_DATE,
+                               VERBOSE_NAME_RECIPE, VERBOSE_NAME_SLUG,
+                               VERBOSE_NAME_TAGS, VERBOSE_NAME_TEXT,
+                               VERBOSE_NAME_USER)
 
 User = get_user_model()
 
