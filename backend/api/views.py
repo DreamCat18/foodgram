@@ -280,7 +280,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         return response
 
-    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    @action(
+        detail=True,
+        methods=['get'],
+        permission_classes=[AllowAny],
+        url_path='get-link'
+    )
     def get_short_link(self, request, pk=None):
         """Возвращает короткую ссылку на рецепт."""
         import base64
