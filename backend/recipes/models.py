@@ -6,12 +6,10 @@ from backend.constants import (MAX_LENGTH_MEASUREMENT_UNIT,
                                MAX_LENGTH_NAME_INGREDIENT,
                                MAX_LENGTH_NAME_RECIPE, MAX_LENGTH_NAME_TAG,
                                MAX_LENGTH_SLUG_TAG, MIN_VALUE_AMOUNT,
-                               MIN_VALUE_COOKING_TIME, RELATED_NAME_FAVORITES,
+                               MIN_VALUE_COOKING_TIME,
                                RELATED_NAME_RECIPE_INGREDIENTS,
                                RELATED_NAME_RECIPES,
-                               RELATED_NAME_SHOPPING_CART,
-                               RELATED_NAME_SUBSCRIBERS,
-                               RELATED_NAME_SUBSCRIPTIONS, UPLOAD_PATH_RECIPES,
+                               UPLOAD_PATH_RECIPES,
                                VERBOSE_NAME_AMOUNT, VERBOSE_NAME_AUTHOR,
                                VERBOSE_NAME_COOKING_TIME, VERBOSE_NAME_IMAGE,
                                VERBOSE_NAME_INGREDIENT,
@@ -113,7 +111,7 @@ class Recipe(models.Model):
         validators=[MinValueValidator(
             MIN_VALUE_COOKING_TIME,
             message=(
-                f'Время приготовления не может быть'
+                'Время приготовления не может быть '
                 f'меньше {MIN_VALUE_COOKING_TIME} минуты.'
             )
         )]
@@ -153,7 +151,7 @@ class RecipeIngredient(models.Model):
         validators=[MinValueValidator(
             MIN_VALUE_AMOUNT,
             message=(
-                f'Количество ингредиента'
+                'Количество ингредиента '
                 f'не может быть меньше {MIN_VALUE_AMOUNT}.'
             )
         )]
@@ -190,27 +188,20 @@ class BaseUserRecipeRelation(models.Model):
 
     class Meta:
         abstract = True
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_%(class)s'
+            )
+        ]
 
 
 class Favorite(BaseUserRecipeRelation):
     """Модель избранного рецепта."""
 
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name=RELATED_NAME_FAVORITES,
-        verbose_name=VERBOSE_NAME_RECIPE
-    )
-
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'],
-                name='unique_favorite'
-            )
-        ]
 
     def __str__(self):
         """Возвращает строковое представление избранного."""
@@ -220,54 +211,10 @@ class Favorite(BaseUserRecipeRelation):
 class ShoppingCart(BaseUserRecipeRelation):
     """Модель списка покупок."""
 
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name=RELATED_NAME_SHOPPING_CART,
-        verbose_name=VERBOSE_NAME_RECIPE
-    )
-
     class Meta:
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'],
-                name='unique_shopping_cart'
-            )
-        ]
 
     def __str__(self):
         """Возвращает строковое представление списка покупок."""
         return f'{self.user} добавил {self.recipe} в список покупок'
-
-
-class Subscription(models.Model):
-    """Модель подписки на автора."""
-
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name=RELATED_NAME_SUBSCRIPTIONS,
-        verbose_name=VERBOSE_NAME_USER
-    )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name=RELATED_NAME_SUBSCRIBERS,
-        verbose_name=VERBOSE_NAME_AUTHOR
-    )
-
-    class Meta:
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'author'],
-                name='unique_subscription'
-            )
-        ]
-
-    def __str__(self):
-        """Возвращает строковое представление подписки."""
-        return f'{self.user} подписан на {self.author}'
