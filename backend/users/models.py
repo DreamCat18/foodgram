@@ -15,7 +15,6 @@ class User(AbstractUser):
         VERBOSE_NAME_EMAIL,
         max_length=MAX_LENGTH_EMAIL,
         unique=True,
-        null=False
     )
     first_name = models.CharField(
         VERBOSE_NAME_FIRST_NAME,
@@ -38,6 +37,10 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
+    def __str__(self):
+        """Возвращает строковое представление пользователя."""
+        return self.email
+
     def clean(self):
         """Валидация модели."""
         super().clean()
@@ -45,14 +48,3 @@ class User(AbstractUser):
             raise ValidationError({
                 'username': 'Имя пользователя "me" не разрешено.'
             })
-
-    def __str__(self):
-        """Возвращает строковое представление пользователя."""
-
-        return self.email
-
-    def save(self, *args, **kwargs):
-        """Сохранение с предварительной очисткой."""
-
-        self.full_clean()
-        super().save(*args, **kwargs)
