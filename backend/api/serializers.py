@@ -387,6 +387,3 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return UserWithRecipesSerializer(instance.author).data
-
-
-
