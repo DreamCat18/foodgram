@@ -1,8 +1,13 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import validate_email
 from django.db import transaction
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag)
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Tag
+)
 from users.models import Subscription
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -60,9 +65,12 @@ class UserPostSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {'password': {'write_only': True}}
 
-    def validate_email(self, value):
-        """Валидирует email."""
-        validate_email(value)
+    def validate_username(self, value):
+        """Запрещает использование username 'me'."""
+        if value.lower() == 'me':
+            raise ValidationError(
+                'Нельзя использовать "me" в качестве username.'
+            )
         return value
 
     def create(self, validated_data):
@@ -325,6 +333,20 @@ class UserWithRecipesSerializer(UserGetSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'avatar',
+            'recipes',
+            'recipes_count',
+        )
+
     def get_recipes(self, obj):
         """Возвращает рецепты пользователя."""
         request = self.context.get('request')
@@ -349,20 +371,6 @@ class UserWithRecipesSerializer(UserGetSerializer):
     def get_recipes_count(self, obj):
         """Возвращает количество рецептов."""
         return obj.recipes.count()
-
-    class Meta:
-        model = User
-        fields = (
-            'id',
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'avatar',
-            'recipes',
-            'recipes_count',
-        )
 
 
 class SubscriptionCreateSerializer(serializers.ModelSerializer):

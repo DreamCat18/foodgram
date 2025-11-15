@@ -62,7 +62,7 @@ docker-compose exec backend python manage.py load_ingredients
 
 ### Доступ к приложению
 
-- **Веб-приложение**: http://localhost
+- **Веб-приложение**: https://foodgramchik.ddns.net/
 - **API документация**: http://localhost/api/docs/
 - **Redoc**: http://localhost/api/redoc/
 
