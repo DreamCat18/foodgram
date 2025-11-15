@@ -7,7 +7,7 @@ Foodgram - это веб-приложение для публикации и о�
 - **Backend**: Python 3.11, Django 4.2.25, Django REST Framework 3.15.2, PostgreSQL 13.10
 - **Frontend**: React, JavaScript
 - **Инфраструктура**: Docker, Docker Compose, Nginx, Gunicorn
-- **Дополнительно**: Djoser для аутентификации, Pillow для работы с изображениями, ReportLab для генерации PDF
+- **Дополнительно**: Djoser для аутентификации, Pillow для работы с изображениями
 
 ## Установка и запуск
 
@@ -124,3 +124,5 @@ docker-compose exec backend python manage.py test
 docker-compose -f docker-compose.production.yml up --build
 ```
 
+## Авторы
+Амелия Зарубина https://github.com/DreamCat18
