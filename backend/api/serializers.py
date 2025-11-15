@@ -203,6 +203,15 @@ class IngredientCreateSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     amount = serializers.IntegerField(min_value=MIN_VALUE_AMOUNT)
 
+    def to_representation(self, instance):
+        """Возвращает представление ингредиента."""
+        return {
+            'id': instance.ingredient.id,
+            'name': instance.ingredient.name,
+            'measurement_unit': instance.ingredient.measurement_unit,
+            'amount': instance.amount,
+        }
+
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания рецепта."""

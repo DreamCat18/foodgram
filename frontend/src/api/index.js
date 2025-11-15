@@ -135,12 +135,11 @@ class Api {
   } = {}) {
     const token = localStorage.getItem("token");
     const authorization = token ? { authorization: `Token ${token}` } : {};
+    tags = tags || [];
     const tagsString = tags
-      ? tags
-          .filter((tag) => tag.value)
-          .map((tag) => `&tags=${tag.slug}`)
-          .join("")
-      : "";
+      .filter((tag) => tag.value)
+      .map((tag) => `&tags=${tag.slug}`)
+      .join("");
     return fetch(
       `/api/recipes/?page=${page}&limit=${limit}${
         author ? `&author=${author}` : ""

@@ -214,7 +214,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             request,
             pk,
             FavoriteSerializer,
-            Favorite,
         )
 
     @favorite.mapping.delete
@@ -233,7 +232,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             request,
             pk,
             ShoppingCartSerializer,
-            ShoppingCart,
         )
 
     @shopping_cart.mapping.delete
@@ -243,7 +241,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def _get_recipes_in_shopping_cart(self, user):
         """Получает рецепты в корзине пользователя."""
-        return Recipe.objects.filter(shopping_cart__user=user)
+        return Recipe.objects.filter(shoppingcart__user=user)
 
     def _get_shopping_list_content(self, ingredients):
         """Генерирует содержимое списка покупок по переданным ингредиентам."""
