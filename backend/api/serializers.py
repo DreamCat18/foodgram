@@ -23,6 +23,7 @@ class UserGetSerializer(serializers.ModelSerializer):
     """Сериализатор для пользователя."""
 
     is_subscribed = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -48,6 +49,13 @@ class UserGetSerializer(serializers.ModelSerializer):
                 author=obj,
             ).exists()
         )
+
+    def get_avatar(self, obj):
+        """Возвращает полный URL аватара."""
+        request = self.context.get('request')
+        if obj.avatar and request:
+            return request.build_absolute_uri(obj.avatar.url)
+        return obj.avatar.url if obj.avatar else None
 
 
 class UserPostSerializer(serializers.ModelSerializer):
@@ -130,9 +138,18 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 class RecipeShortSerializer(serializers.ModelSerializer):
     """Сокращенный сериализатор для рецепта."""
 
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
+
+    def get_image(self, obj):
+        """Возвращает полный URL изображения."""
+        request = self.context.get('request')
+        if obj.image and request:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url if obj.image else None
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -150,6 +167,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -171,6 +189,13 @@ class RecipeSerializer(serializers.ModelSerializer):
             'is_favorited',
             'is_in_shopping_cart',
         )
+
+    def get_image(self, obj):
+        """Возвращает полный URL изображения."""
+        request = self.context.get('request')
+        if obj.image and request:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url if obj.image else None
 
     def get_is_favorited(self, obj):
         """Проверяет, добавлен ли рецепт в избранное."""

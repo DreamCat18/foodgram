@@ -92,7 +92,7 @@ class Api {
 
   changeAvatar({ file }) {
     const token = localStorage.getItem("token");
-    return fetch(`/api/users/me/avatar/`, {
+    return fetch(`/api/users/me/me/avatar/`, {
       method: "PUT",
       headers: {
         ...this._headers,
@@ -104,7 +104,7 @@ class Api {
 
   deleteAvatar() {
     const token = localStorage.getItem("token");
-    return fetch(`/api/users/me/avatar/`, {
+    return fetch(`/api/users/me/me/avatar/`, {
       method: "DELETE",
       headers: {
         ...this._headers,
@@ -135,7 +135,7 @@ class Api {
   } = {}) {
     const token = localStorage.getItem("token");
     const authorization = token ? { authorization: `Token ${token}` } : {};
-    tags = tags || [];
+    tags = Array.isArray(tags) ? tags : [];
     const tagsString = tags
       .filter((tag) => tag.value)
       .map((tag) => `&tags=${tag.slug}`)
