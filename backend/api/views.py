@@ -181,7 +181,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateSerializer
         return RecipeSerializer
 
-    def _add_relation(self, request, pk, serializer_class, model_class):
+    def _add_relation(self, request, pk, serializer_class):
         """Общий метод для добавления связи."""
         recipe = get_object_or_404(Recipe, pk=pk)
         serializer = serializer_class(
@@ -241,17 +241,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Удаляет рецепт из корзины."""
         return self._remove_relation(request, pk, ShoppingCart)
 
-    def _get_shopping_list_content(self, request):
-        """Генерирует содержимое списка покупок."""
-        ingredients = RecipeIngredient.objects.filter(
-            recipe__shopping_cart__user=request.user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(
-            total_amount=Sum('amount')
-        ).order_by('ingredient__name')
+    def _get_recipes_in_shopping_cart(self, user):
+        """Получает рецепты в корзине пользователя."""
+        return Recipe.objects.filter(shopping_cart__user=user)
 
+    def _get_shopping_list_content(self, ingredients):
+        """Генерирует содержимое списка покупок по переданным ингредиентам."""
         content_lines = ['Список покупок:\n']
         for ingredient in ingredients:
             name = ingredient['ingredient__name']
@@ -269,15 +264,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Скачивает список покупок."""
-        content = self._get_shopping_list_content(request)
+        recipes = self._get_recipes_in_shopping_cart(request.user)
 
-        response = HttpResponse(
-            content,
-            content_type='text/plain; charset=utf-8'
-        )
-        response['Content-Disposition'] = (
-            'attachment; filename="shopping_list.txt"'
-        )
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__in=recipes
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(
+            total_amount=Sum('amount')
+        ).order_by('ingredient__name')
+
+        content = self._get_shopping_list_content(ingredients)
+
+        filename = 'shopping_list.txt'
+        response = HttpResponse(content, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
 
     @action(
