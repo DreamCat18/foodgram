@@ -62,7 +62,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """Возвращает класс сериализатора в зависимости от действия."""
         if self.action == 'create':
             return UserPostSerializer
-        if self.action == 'retrieve':
+        if self.action in ['retrieve', 'subscriptions']:
             return UserWithRecipesSerializer
         return UserGetSerializer
 
