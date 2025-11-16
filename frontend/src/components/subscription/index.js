@@ -27,8 +27,6 @@ const Subscription = ({
   recipes,
   avatar,
 }) => {
-  const shouldShowButton = recipes_count > 3;
-  const moreRecipes = recipes_count - 3;
   const [toDelete, setToDelete] = useState(false);
 
   return (
@@ -91,19 +89,6 @@ const Subscription = ({
               </li>
             );
           })}
-          {shouldShowButton && (
-            <li className={styles.subscriptionMore}>
-              <LinkComponent
-                className={styles.subscriptionLink}
-                title={`Еще ${moreRecipes} ${countForm(moreRecipes, [
-                  "рецепт",
-                  "рецепта",
-                  "рецептов",
-                ])}...`}
-                href={`/user/${id}`}
-              />
-            </li>
-          )}
         </ul>
       </div>
       <div className={styles.subscriptionFooter}>

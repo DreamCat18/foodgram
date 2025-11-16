@@ -25,9 +25,9 @@ export default function useSubscriptions () {
       })
   }
 
-  const getSubscriptions = ({ page = 1, limit = 6, recipes_limit = 3 }) => {
+  const getSubscriptions = ({ page = 1, limit = 6 }) => {
     api
-      .getSubscriptions({ page, limit, recipes_limit })
+      .getSubscriptions({ page, limit })
       .then(res => {
         const { results = [], count = 0 } = res || {}
         setSubscriptions(Array.isArray(results) ? results : [])

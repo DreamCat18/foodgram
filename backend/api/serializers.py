@@ -385,18 +385,7 @@ class UserWithRecipesSerializer(UserGetSerializer):
 
     def get_recipes(self, obj):
         """Возвращает рецепты пользователя."""
-        request = self.context.get('request')
-        recipes_limit = (
-            request.query_params.get('recipes_limit')
-            if request else None
-        )
-        recipes = obj.recipes.all()
-
-        if recipes_limit:
-            try:
-                recipes = recipes[:int(recipes_limit)]
-            except ValueError:
-                pass
+        recipes = obj.recipes.all().order_by('-pub_date')
 
         return RecipeShortSerializer(
             recipes,

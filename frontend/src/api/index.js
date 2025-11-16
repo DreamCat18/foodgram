@@ -274,10 +274,10 @@ class Api {
 
   // subscriptions
 
-  getSubscriptions({ page, limit = 6, recipes_limit = 3 }) {
+  getSubscriptions({ page, limit = 6 }) {
     const token = localStorage.getItem("token");
     return fetch(
-      `/api/users/subscriptions/?page=${page}&limit=${limit}&recipes_limit=${recipes_limit}`,
+      `/api/users/subscriptions/?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
