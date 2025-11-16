@@ -19,8 +19,8 @@ const SubscriptionsPage = () => {
     api
       .getSubscriptions({ page })
       .then(res => {
-        setSubscriptions(res.results)
-        setSubscriptionsCount(res.count)
+        setSubscriptions(res.results || [])
+        setSubscriptionsCount(res.count || 0)
       })
   }
 
