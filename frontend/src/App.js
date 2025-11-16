@@ -170,8 +170,12 @@ function App() {
         is_in_shopping_cart: Number(true),
       })
       .then((res) => {
-        const { count } = res;
+        const { count = 0 } = res || {};
         setOrders(count);
+      })
+      .catch((err) => {
+        console.error('Error fetching orders:', err)
+        setOrders(0);
       });
   };
 

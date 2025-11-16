@@ -3,7 +3,7 @@ import cn from 'classnames'
 import { Tag } from '../index'
 
 const TagsContainer = ({ tags, className }) => {
-  if (!tags) { return null }
+  if (!tags || !Array.isArray(tags)) { return null }
   return <div className={cn(styles['tags-container'], className)}>
     {tags.map(tag => {
       return <Tag

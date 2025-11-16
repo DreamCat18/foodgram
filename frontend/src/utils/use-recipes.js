@@ -27,6 +27,21 @@ export default function useRecipes () {
     })
   }
 
+  const getRecipes = ({ page = 1, tags }) => {
+    api
+      .getRecipes({ page, tags })
+      .then(res => {
+        const { results = [], count = 0 } = res || {}
+        setRecipes(Array.isArray(results) ? results : [])
+        setRecipesCount(count)
+      })
+      .catch(err => {
+        console.error('Error fetching recipes in useRecipes:', err)
+        setRecipes([])
+        setRecipesCount(0)
+      })
+  }
+
   const handleAddToCart = ({ id, toAdd = true, callback }) => {
     const method = toAdd ? api.addToOrders.bind(api) : api.removeFromOrders.bind(api)
     method({ id }).then(res => {
@@ -58,6 +73,7 @@ export default function useRecipes () {
     handleLike,
     handleAddToCart,
     handleTagsChange,
-    setTagsValue
+    setTagsValue,
+    getRecipes
   }
 }

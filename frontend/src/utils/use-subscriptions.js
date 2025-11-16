@@ -24,6 +24,21 @@ export default function useSubscriptions () {
         }
       })
   }
+
+  const getSubscriptions = ({ page = 1, limit = 6, recipes_limit = 3 }) => {
+    api
+      .getSubscriptions({ page, limit, recipes_limit })
+      .then(res => {
+        const { results = [], count = 0 } = res || {}
+        setSubscriptions(Array.isArray(results) ? results : [])
+        setSubscriptionsCount(count)
+      })
+      .catch(err => {
+        console.error('Error fetching subscriptions in useSubscriptions:', err)
+        setSubscriptions([])
+        setSubscriptionsCount(0)
+      })
+  }
   
   return {
     subscriptions,
@@ -32,6 +47,7 @@ export default function useSubscriptions () {
     setSubscriptionsPage,
     removeSubscription,
     subscriptionsCount,
-    setSubscriptionsCount
+    setSubscriptionsCount,
+    getSubscriptions
   }
 }

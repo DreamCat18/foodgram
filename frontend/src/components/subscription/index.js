@@ -66,7 +66,7 @@ const Subscription = ({
       </div>
       <div className={styles.subscriptionBody}>
         <ul className={styles.subscriptionItems}>
-          {recipes.map((recipe) => {
+          {Array.isArray(recipes) && recipes.map((recipe) => {
             return (
               <li className={styles.subscriptionItem} key={recipe.id}>
                 <LinkComponent

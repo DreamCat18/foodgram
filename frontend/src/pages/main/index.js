@@ -24,9 +24,14 @@ const HomePage = ({ updateOrders }) => {
     api
       .getRecipes({ page, tags })
       .then(res => {
-        const { results, count } = res
-        setRecipes(results)
+        const { results = [], count = 0 } = res || {}
+        setRecipes(Array.isArray(results) ? results : [])
         setRecipesCount(count)
+      })
+      .catch(err => {
+        console.error('Error fetching recipes:', err)
+        setRecipes([])
+        setRecipesCount(0)
       })
   }
 
@@ -37,7 +42,15 @@ const HomePage = ({ updateOrders }) => {
   useEffect(_ => {
     api.getTags()
       .then(tags => {
-        setTagsValue(tags.map(tag => ({ ...tag, value: true })))
+        if (Array.isArray(tags)) {
+          setTagsValue(tags.map(tag => ({ ...tag, value: true })))
+        } else {
+          setTagsValue([])
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching tags:', err)
+        setTagsValue([])
       })
   }, [])
 

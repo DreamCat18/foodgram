@@ -70,10 +70,13 @@ const SingleCard = ({ loadItem, updateOrders }) => {
         recipe_id: id,
       })
       .then((res) => {
-        setRecipe(res);
+        setRecipe(res || {});
         setLoading(false);
       })
       .catch((err) => {
+        console.error('Error fetching recipe:', err)
+        setRecipe({});
+        setLoading(false);
         history.push("/not-found");
       });
   }, []);
