@@ -100,7 +100,8 @@ const Card = ({
               </>
             ) : (
               <>
-                <Icons.PlusIcon /> Добавить в покупки
+                <Icons.PlusIcon /> 
+                Добавить в покупки
               </>
             )}
           </Button>
