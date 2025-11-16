@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useTags } from './index.js'
 import api from '../api'
 
-export default function useRecipes () {
+export default function useRecipes (options = {}) {
+  const { is_favorited = 0 } = options
   const [ recipes, setRecipes ] = useState([])
   const [ recipesCount, setRecipesCount ] = useState(0)
   const [ recipesPage, setRecipesPage ] = useState(1)
@@ -29,7 +30,7 @@ export default function useRecipes () {
 
   const getRecipes = ({ page = 1, tags }) => {
     api
-      .getRecipes({ page, tags })
+      .getRecipes({ page, tags, is_favorited })
       .then(res => {
         const { results = [], count = 0 } = res || {}
         setRecipes(Array.isArray(results) ? results : [])

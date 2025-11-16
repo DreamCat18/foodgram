@@ -17,23 +17,9 @@ const HomePage = ({ updateOrders }) => {
     setTagsValue,
     handleTagsChange,
     handleLike,
-    handleAddToCart
+    handleAddToCart,
+    getRecipes
   } = useRecipes()
-
-  const getRecipes = ({ page = 1, tags }) => {
-    api
-      .getRecipes({ page, tags })
-      .then(res => {
-        const { results = [], count = 0 } = res || {}
-        setRecipes(Array.isArray(results) ? results : [])
-        setRecipesCount(count)
-      })
-      .catch(err => {
-        console.error('Error fetching recipes:', err)
-        setRecipes([])
-        setRecipesCount(0)
-      })
-  }
 
   useEffect(_ => {
     getRecipes({ page: recipesPage, tags: tagsValue })

@@ -17,18 +17,9 @@ const Favorites = ({ updateOrders }) => {
     handleTagsChange,
     setTagsValue,
     handleLike,
-    handleAddToCart
-  } = useRecipes()
-  
-  const getRecipes = ({ page = 1, tags }) => {
-    api
-      .getRecipes({ page, is_favorited: Number(true), tags })
-      .then(res => {
-        const { results, count } = res
-        setRecipes(results)
-        setRecipesCount(count)
-      })
-  }
+    handleAddToCart,
+    getRecipes
+  } = useRecipes({ is_favorited: 1 })
 
   useEffect(_ => {
     getRecipes({ page: recipesPage, tags: tagsValue })
