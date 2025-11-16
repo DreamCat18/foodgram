@@ -66,6 +66,11 @@ docker-compose exec backend python manage.py load_ingredients
 - **API документация**: http://localhost/api/docs/
 - **Redoc**: http://localhost/api/redoc/
 
+- **Admin** (
+   Email address: ameliahenituse@yandex.ru
+   Password: 123
+   )
+
 ## API
 
 API предоставляет следующие возможности:
