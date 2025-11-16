@@ -30,10 +30,10 @@ class RecipeFilter(FilterSet):
     author = filters.ModelChoiceFilter(
         queryset=User.objects.all()
     )
-    is_favorited = filters.BooleanFilter(
+    is_favorited = filters.CharFilter(
         method='filter_is_favorited'
     )
-    is_in_shopping_cart = filters.BooleanFilter(
+    is_in_shopping_cart = filters.CharFilter(
         method='filter_is_in_shopping_cart'
     )
 
@@ -43,16 +43,16 @@ class RecipeFilter(FilterSet):
 
     def filter_is_favorited(self, queryset, name, value):
         """Фильтрует рецепты по избранному."""
-        if value and self.request.user.is_authenticated:
+        if value == '1' and self.request.user.is_authenticated:
             return queryset.filter(favorite_set__user=self.request.user)
-        elif value and not self.request.user.is_authenticated:
+        elif value == '1' and not self.request.user.is_authenticated:
             return queryset.none()
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         """Фильтрует рецепты по списку покупок."""
-        if value and self.request.user.is_authenticated:
+        if value == '1' and self.request.user.is_authenticated:
             return queryset.filter(shoppingcart_set__user=self.request.user)
-        elif value and not self.request.user.is_authenticated:
+        elif value == '1' and not self.request.user.is_authenticated:
             return queryset.none()
         return queryset
