@@ -24,7 +24,8 @@ DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://foodgramchik.ddns.net').split(',')
+CSRF_TRUSTED_ORIGINS = ['https://foodgramchik.ddns.net'] + os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+FRONTEND_BASE_URL = os.getenv('FRONTEND_BASE_URL', 'https://foodgramchik.ddns.net')
 
 # Security settings for production
 if not DEBUG:
