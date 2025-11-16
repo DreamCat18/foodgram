@@ -54,7 +54,8 @@ class UserGetSerializer(serializers.ModelSerializer):
         """Возвращает полный URL аватара."""
         request = self.context.get('request')
         if obj.avatar and request:
-            return request.build_absolute_uri(obj.avatar.url)
+            url = request.build_absolute_uri(obj.avatar.url)
+            return url.replace('http://', 'https://')
         return obj.avatar.url if obj.avatar else None
 
 
@@ -148,7 +149,8 @@ class RecipeShortSerializer(serializers.ModelSerializer):
         """Возвращает полный URL изображения."""
         request = self.context.get('request')
         if obj.image and request:
-            return request.build_absolute_uri(obj.image.url)
+            url = request.build_absolute_uri(obj.image.url)
+            return url.replace('http://', 'https://')
         return obj.image.url if obj.image else None
 
 
