@@ -13,6 +13,6 @@ router_v1.register('tags', TagViewSet, basename='tag')
 
 urlpatterns = [
     path('', include(router_v1.urls)),
-    path('auth/', include('djoser.urls')), #если убрать то не работает смена пароля
+    path('auth/', include('djoser.urls')),  # без него не работает смена пароля
     path('auth/', include('djoser.urls.authtoken')),
 ]
