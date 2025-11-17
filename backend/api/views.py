@@ -1,3 +1,5 @@
+import base64
+
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
@@ -16,12 +18,19 @@ from backend.constants import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from .filters import IngredientFilter, RecipeFilter
 from .paginations import CustomPagination
 from .permissions import IsAuthorOrReadOnlyPermission
-from .serializers import (FavoriteSerializer, IngredientSerializer,
-                          RecipeCreateSerializer, RecipeSerializer,
-                          SetAvatarSerializer, ShoppingCartSerializer,
-                          SubscriptionCreateSerializer, TagSerializer,
-                          UserGetSerializer, UserPostSerializer,
-                          UserWithRecipesSerializer)
+from .serializers import (
+    FavoriteSerializer,
+    IngredientSerializer,
+    RecipeCreateSerializer,
+    RecipeSerializer,
+    SetAvatarSerializer,
+    ShoppingCartSerializer,
+    SubscriptionCreateSerializer,
+    TagSerializer,
+    UserGetSerializer,
+    UserPostSerializer,
+    UserWithRecipesSerializer
+)
 
 User = get_user_model()
 
@@ -288,7 +297,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def get_short_link(self, request, pk=None):
         """Возвращает короткую ссылку на рецепт."""
-        import base64
         recipe = get_object_or_404(Recipe, pk=pk)
         short_code = base64.urlsafe_b64encode(
             str(recipe.pk).encode()
