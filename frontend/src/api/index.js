@@ -80,7 +80,7 @@ class Api {
 
   changePassword({ current_password, new_password }) {
     const token = localStorage.getItem("token");
-    return fetch(`/api/users/set_password/`, {
+    return fetch(`/api/auth/users/set_password/`, {
       method: "POST",
       headers: {
         ...this._headers,
@@ -114,7 +114,7 @@ class Api {
   }
 
   resetPassword({ email }) {
-    return fetch(`/api/users/reset_password/`, {
+    return fetch(`/api/auth/users/reset_password/`, {
       method: "POST",
       headers: {
         ...this._headers,
