@@ -1,7 +1,50 @@
+from django import forms
 from django.contrib import admin
 
 from .models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                      ShoppingCart, Tag)
+
+
+class FavoriteForm(forms.ModelForm):
+    """Форма для избранного с валидацией."""
+
+    class Meta:
+        model = Favorite
+        fields = '__all__'
+
+    def clean(self):
+        """Валидирует данные формы."""
+        cleaned_data = super().clean()
+        user = cleaned_data.get('user')
+        recipe = cleaned_data.get('recipe')
+        if user and recipe and Favorite.objects.filter(
+            user=user, recipe=recipe
+        ).exists():
+            raise forms.ValidationError(
+                'Этот рецепт уже добавлен в избранное.'
+            )
+        return cleaned_data
+
+
+class ShoppingCartForm(forms.ModelForm):
+    """Форма для корзины с валидацией."""
+
+    class Meta:
+        model = ShoppingCart
+        fields = '__all__'
+
+    def clean(self):
+        """Валидирует данные формы."""
+        cleaned_data = super().clean()
+        user = cleaned_data.get('user')
+        recipe = cleaned_data.get('recipe')
+        if user and recipe and ShoppingCart.objects.filter(
+            user=user, recipe=recipe
+        ).exists():
+            raise forms.ValidationError(
+                'Этот рецепт уже добавлен в корзину.'
+            )
+        return cleaned_data
 
 
 class RecipeIngredientInline(admin.TabularInline):
@@ -40,11 +83,13 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
+    form = FavoriteForm
     list_display = ('user', 'recipe')
     search_fields = ('user__username', 'user__email', 'recipe__name')
 
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
+    form = ShoppingCartForm
     list_display = ('user', 'recipe')
     search_fields = ('user__username', 'user__email', 'recipe__name')
