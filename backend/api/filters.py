@@ -37,6 +37,12 @@ class RecipeFilter(FilterSet):
         method='filter_is_in_shopping_cart'
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        choices_list = [(tag.slug, tag.slug) for tag in Tag.objects.all()]
+        self.filters['tags'].extra['choices'] = choices_list
+        self.filters['tags'].field.choices = choices_list
+
     class Meta:
         model = Recipe
         fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')
