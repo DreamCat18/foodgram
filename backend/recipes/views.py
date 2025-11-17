@@ -13,7 +13,7 @@ def short_url(request, short_link):
         recipe_pk = int(base64.urlsafe_b64decode(short_link).decode())
         recipe = Recipe.objects.get(pk=recipe_pk)
         return redirect(
-            f"{settings.FRONTEND_BASE_URL}/recipes/{recipe.slug}"
+            f"{settings.FRONTEND_BASE_URL}/recipes/{recipe.id}"
         )
     except (ValueError, UnicodeDecodeError, Recipe.DoesNotExist):
         return redirect('/not_found/')
