@@ -92,6 +92,13 @@ const Subscription = ({
         </ul>
       </div>
       <div className={styles.subscriptionFooter}>
+        {recipes_count > 3 && (
+          <LinkComponent
+            className={styles.subscriptionLink}
+            href={`/user/${id}`}
+            title={`Все рецепты (${recipes_count})`}
+          />
+        )}
         <Button
           className={styles.subscriptionButton}
           clickHandler={(_) => {

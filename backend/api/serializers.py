@@ -387,7 +387,7 @@ class UserWithRecipesSerializer(UserGetSerializer):
 
     def get_recipes(self, obj):
         """Возвращает рецепты пользователя."""
-        recipes = obj.recipes.all().order_by('-pub_date')
+        recipes = obj.recipes.all().order_by('-pub_date')[:3]
 
         return RecipeShortSerializer(
             recipes,
