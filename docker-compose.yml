@@ -33,5 +33,6 @@ services:
     volumes:
       - static:/staticfiles
       - media:/media
+      - ./nginx/docs:/usr/share/nginx/html/redoc
     ports:
       - 8000:80
