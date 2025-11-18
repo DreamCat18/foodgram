@@ -9,22 +9,10 @@ User = get_user_model()
 
 
 class SubscriptionForm(forms.ModelForm):
-    """Форма для подписки с валидацией."""
-
+    """Форма для подписки."""
     class Meta:
         model = Subscription
         fields = '__all__'
-
-    def clean(self):
-        """Валидирует данные формы."""
-        cleaned_data = super().clean()
-        user = cleaned_data.get('user')
-        author = cleaned_data.get('author')
-        if user and author and user == author:
-            raise forms.ValidationError(
-                'Нельзя подписаться на самого себя.'
-            )
-        return cleaned_data
 
 
 @admin.register(User)

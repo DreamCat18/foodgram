@@ -11,27 +11,23 @@ from backend.constants import (
     VERBOSE_NAME_EMAIL,
     VERBOSE_NAME_FIRST_NAME,
     VERBOSE_NAME_LAST_NAME,
-    RELATED_NAME_SUBSCRIBERS,
-    RELATED_NAME_SUBSCRIPTIONS,
-    VERBOSE_NAME_AUTHOR,
-    VERBOSE_NAME_USER
 )
 
 
 class Subscription(models.Model):
     """Модель подписки на автора."""
-
+    
     user = models.ForeignKey(
         'users.User',
         on_delete=models.CASCADE,
-        related_name=RELATED_NAME_SUBSCRIPTIONS,
-        verbose_name=VERBOSE_NAME_USER
+        related_name='subscriptions',
+        verbose_name='Пользователь'
     )
     author = models.ForeignKey(
-        'users.User',
+        'users.User', 
         on_delete=models.CASCADE,
-        related_name=RELATED_NAME_SUBSCRIBERS,
-        verbose_name=VERBOSE_NAME_AUTHOR
+        related_name='subscribers',
+        verbose_name='Автор'
     )
 
     class Meta:
@@ -47,10 +43,6 @@ class Subscription(models.Model):
                 name='prevent_self_subscription'
             )
         ]
-
-    def __str__(self):
-        """Возвращает строковое представление подписки."""
-        return f'{self.user} подписан на {self.author}'
 
 
 class User(AbstractUser):
