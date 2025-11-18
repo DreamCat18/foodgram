@@ -1,4 +1,10 @@
-from api.views import IngredientViewSet, RecipeViewSet, TagViewSet, UserViewSet
+from api.views import (
+    CustomPasswordResetView,
+    IngredientViewSet,
+    RecipeViewSet,
+    TagViewSet,
+    UserViewSet
+)
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
@@ -13,6 +19,10 @@ router_v1.register('tags', TagViewSet, basename='tag')
 
 urlpatterns = [
     path('', include(router_v1.urls)),
-    path('auth/', include('djoser.urls')),  # без него не работает смена пароля
     path('auth/', include('djoser.urls.authtoken')),
+    path(
+        'users/set_password/',
+        CustomPasswordResetView.as_view(),
+        name='set_password'
+    ),
 ]

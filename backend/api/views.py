@@ -6,10 +6,12 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from django_filters.rest_framework import DjangoFilterBackend
+from djoser.serializers import SetPasswordSerializer
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from backend.constants import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from recipes.models import (
@@ -162,6 +164,25 @@ class UserViewSet(viewsets.ModelViewSet):
         )
         subscription.delete()
         return Response(status=HTTP_204_NO_CONTENT)
+
+
+class CustomPasswordResetView(APIView):
+    """Кастомное представление для смены пароля."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = SetPasswordSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        request.user.set_password(serializer.validated_data['new_password'])
+        request.user.save()
+        return Response(
+            {'detail': 'Пароль успешно изменен'},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
