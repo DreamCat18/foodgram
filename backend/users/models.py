@@ -16,7 +16,6 @@ from backend.constants import (
 
 class Subscription(models.Model):
     """Модель подписки на автора."""
-    
     user = models.ForeignKey(
         'users.User',
         on_delete=models.CASCADE,
@@ -24,7 +23,7 @@ class Subscription(models.Model):
         verbose_name='Пользователь'
     )
     author = models.ForeignKey(
-        'users.User', 
+        'users.User',
         on_delete=models.CASCADE,
         related_name='subscribers',
         verbose_name='Автор'
