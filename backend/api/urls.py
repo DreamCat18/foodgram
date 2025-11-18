@@ -21,7 +21,7 @@ urlpatterns = [
     path('', include(router_v1.urls)),
     path('auth/', include('djoser.urls.authtoken')),
     path(
-        'users/set_password/',
+        'auth/users/set_password/',
         CustomPasswordResetView.as_view(),
         name='set_password'
     ),
