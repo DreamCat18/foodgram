@@ -4,16 +4,23 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag)
-from users.models import Subscription
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from backend.constants import HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Tag,
+)
+from users.models import Subscription
 
 from .filters import IngredientFilter, RecipeFilter
 from .paginations import CustomPagination
@@ -29,7 +36,7 @@ from .serializers import (
     TagSerializer,
     UserGetSerializer,
     UserPostSerializer,
-    UserWithRecipesSerializer
+    UserWithRecipesSerializer,
 )
 
 User = get_user_model()
